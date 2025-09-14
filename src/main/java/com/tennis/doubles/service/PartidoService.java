@@ -68,8 +68,8 @@ public class PartidoService {
 		this.pesosComparativaConfig = pesosComparativaConfig;
     }
 	
-	public List<ProximosPartidosDTO> getProximosPartidos(String categoria, boolean soloFavoritos, boolean ordenPronostico, boolean soloCerrados) {
-        if (partidosEnMemoria.isEmpty() || datosDesactualizados()) {
+	public List<ProximosPartidosDTO> getProximosPartidos(String categoria, boolean soloFavoritos, boolean ordenPronostico, boolean soloCerrados, boolean refrescar) {
+        if (partidosEnMemoria.isEmpty() || datosDesactualizados() || refrescar) {
             cargarProximosPartidosDesdeAPI();
         }
         
@@ -116,7 +116,7 @@ public class PartidoService {
 		//Se realizan 3 llamadas al API para obtener los partidos de los proximos 3 días
 		LocalDate fecha = LocalDate.now();
 		List<ProximosPartidosDTO> listaPartidos = new ArrayList<ProximosPartidosDTO>();
-		for (int i = 1; i <= 2; i++) {
+		for (int i = 1; i <= 3; i++) {
 			try {
 				List<EventoDTO> listaEventos = allSportsApiService.obtenerEventosPorFecha(fecha);
 				for (EventoDTO evento : listaEventos) {

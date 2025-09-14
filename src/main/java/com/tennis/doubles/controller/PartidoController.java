@@ -28,8 +28,9 @@ public class PartidoController {
 	                                     @RequestParam(name = "favorito", defaultValue = "false") boolean favorito,
 	                                     @RequestParam(name = "ordenPronostico", defaultValue = "false") boolean ordenPronostico,
 	                                     @RequestParam(name = "soloCerrados", defaultValue = "false") boolean soloCerrados,
+	                                     @RequestParam(name = "refrescar", defaultValue = "false") boolean refrescar,
 	                                     Model model) {
-	    List<ProximosPartidosDTO> filtrados = partidoService.getProximosPartidos(categoria, favorito, ordenPronostico, soloCerrados);
+	    List<ProximosPartidosDTO> filtrados = partidoService.getProximosPartidos(categoria, favorito, ordenPronostico, soloCerrados, refrescar);
 	    model.addAttribute("partidos", filtrados);
 	    model.addAttribute("categoria", categoria);
 	    model.addAttribute("favorito", favorito);
