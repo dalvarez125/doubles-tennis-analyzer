@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Analizador de Dobles')"></head>
+<body>
+
+<h1 th:text="${mensaje}">Bienvenido al Analizador de Dobles de Tenis</h1>
+<p>Desde aqu&iacute; podr&aacute;s consultar estad&iacute;sticas de jugadores, parejas y torneos.</p>
+
+<div class="menu-container">
+
+    <div class="menu-group">
+	    <span class="menu-title">Ranking Jugadores</span>
+	    <a class="menu-item" th:href="@{/ranking/jugadores(categoria='ATP')}">
+	        <i class="fas fa-mars"></i> ATP
+	    </a>
+	    <a class="menu-item" th:href="@{/ranking/jugadores(categoria='WTA')}">
+	        <i class="fas fa-venus"></i> WTA
+	    </a>
+	    <a class="menu-item" th:href="@{/ranking/jugadores(categoria='ITF Men')}">
+            <i class="fas fa-mars"></i> ITF Hombres
+        </a>
+        <a class="menu-item" th:href="@{/ranking/jugadores(categoria='ITF Women')}">
+            <i class="fas fa-venus"></i> ITF Mujeres
+        </a>
+	</div>
+	
+	<div class="menu-group">
+	    <span class="menu-title">Ranking Parejas</span>
+	    <a class="menu-item" th:href="@{/ranking/parejas(categoria='ATP')}">
+	        <i class="fas fa-mars"></i> ATP
+	    </a>
+	    <a class="menu-item" th:href="@{/ranking/parejas(categoria='WTA')}">
+	        <i class="fas fa-venus"></i> WTA
+	    </a>
+	    <a class="menu-item" th:href="@{/ranking/parejas(categoria='ITF Men')}">
+            <i class="fas fa-mars"></i> ITF Hombres
+        </a>
+        <a class="menu-item" th:href="@{/ranking/parejas(categoria='ITF Women')}">
+            <i class="fas fa-venus"></i> ITF Mujeres
+        </a>
+	</div>
+	
+	<div class="menu-group">
+	    <span class="menu-title">Partidos</span>
+	    <a class="menu-item" th:href="@{/partido/proximos}">
+	        <i class="fas fa-calendar-alt"></i> Pr&oacute;ximos Partidos
+	    </a>
+	</div>
+
+</div>
+
+<div th:replace="fragments/footer :: pie"></div>
+
+</body>
+</html>
+

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Detalle Partido')"></head>
+<body>
+<!-- Barra de navegación con flecha de volver y título -->
+<nav class="navbar">
+    <a th:href="@{${urlRetorno}}" class="nav-back" title="Volver al ranking">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <span class="nav-title" th:text="${titulo}">Detalle Partido</span>
+</nav>
+
+<div class="partido-card">
+    <div class="equipo equipo-local">
+        <p th:text="${partido.parejaLocalNombre}"></p>
+    </div>
+
+    <div class="info-central">
+        <div class="info-item"><strong>Fecha:</strong> <span th:text="${partido.fecha}"></span></div>
+        <div class="info-item"><strong>Hora:</strong> <span th:text="${partido.hora}"></span></div>
+        <div class="info-item"><strong>Torneo:</strong> <span th:text="${partido.torneo}"></span></div>
+        <div class="info-item"><strong>Ronda:</strong> <span th:text="${partido.ronda}"></span></div>
+        <div class="info-item"><strong>Superficie:</strong> <span th:text="${partido.superficie}"></span></div>
+        <div class="info-item"><strong>Categor&iacute;a:</strong> <span th:text="${partido.categoria}"></span></div>
+        <div class="barra-comparativa">
+	        <div class="barra-local"
+	             th:style="'width:' + (${partido.comparativa.puntosLocal} * 100.0 / (${partido.comparativa.puntosLocal} + ${partido.comparativa.puntosVisitante})) + '%'">
+	        </div>
+	        <div class="barra-visitante"
+	             th:style="'width:' + (${partido.comparativa.puntosVisitante} * 100.0 / (${partido.comparativa.puntosLocal} + ${partido.comparativa.puntosVisitante})) + '%'">
+	        </div>
+	    </div>
+	    <div class="puntos-comparativa">
+			    <span th:text="${partido.comparativa.puntosLocal} + ' puntos'"></span>
+			    <span th:text="${partido.comparativa.puntosVisitante} + ' puntos'"></span>
+			</div>
+    </div>
+
+    <div class="equipo equipo-visitante">
+        <p th:text="${partido.parejaVisitanteNombre}"></p>
+    </div>
+</div>
+
+<div class="detalle-comparativa">
+    <div class="bloque-comparativa">
+        <h3 th:text="${partido.parejaLocalNombre}"></h3>
+        <ul>
+            <li><strong>Puntos totales:</strong> <span th:text="${partido.comparativa.puntosLocal}"></span></li>
+            <li><strong>Partidos juntos:</strong> <span th:text="${partido.comparativa.partidosJugadosJuntosLocal} + ' (' + ${partido.comparativa.puntosParejaHabitualLocal} + ' puntos)'"></span></li>
+            <li><strong>Victorias totales:</strong> <span th:text="${#numbers.formatDecimal(partido.comparativa.porcentajeTotalLocal, 1, 2)} + '% (' + ${partido.comparativa.puntosVictoriasTotalesLocal} + ' puntos)'"></span></li>
+            <li><strong>Victorias en superficie:</strong> <span th:text="${#numbers.formatDecimal(partido.comparativa.porcentajeSuperficieLocal, 1, 2)} + '% (' + ${partido.comparativa.puntosSuperficieLocal} + ' puntos)'"></span></li>
+            <li><strong>Forma reciente:</strong> <span th:text="${#numbers.formatDecimal(partido.comparativa.porcentajeFormaRecienteLocal, 1, 2)} + '% (' + ${partido.comparativa.puntosFormaRecienteLocal} + ' puntos)'"></span></li>
+            <li><strong>Historial contra rival:</strong> <span th:text="${partido.comparativa.partidosGanadosContraRivalLocal} + ' ganados (' + ${partido.comparativa.puntosHistorialVsRivalLocal} + ' puntos)'"></span></li>
+            <li><strong>Experiencia jugador 1:</strong> <span th:text="${partido.comparativa.partidosTotalesJugador1Local}"></span></li>
+            <li><strong>Experiencia jugador 2:</strong> <span th:text="${partido.comparativa.partidosTotalesJugador2Local}"></span></li>
+            <li><strong>Total Experiencia:</strong> <span th:text="${partido.comparativa.partidosTotalesJugador1Local + partido.comparativa.partidosTotalesJugador2Local} + ' (' + ${partido.comparativa.puntosExperienciaIndividualLocal} + ' puntos)'"></span></li>
+            <li><strong>Ranking jugador 1:</strong> <span th:text="${partido.comparativa.rankingJugador1Local}"></span></li>
+            <li><strong>Ranking jugador 2:</strong> <span th:text="${partido.comparativa.rankingJugador2Local}"></span></li>
+            <li><strong>Puntos ranking:</strong> <span th:text="${partido.comparativa.puntosRankingLocal} + ' puntos'"></span></li>
+        </ul>
+    </div>
+
+    <div class="bloque-comparativa">
+        <h3 th:text="${partido.parejaVisitanteNombre}"></h3>
+        <ul>
+            <li><strong>Puntos totales:</strong> <span th:text="${partido.comparativa.puntosVisitante}"></span></li>
+            <li><strong>Partidos juntos:</strong> <span th:text="${partido.comparativa.partidosJugadosJuntosVisitante} + ' (' + ${partido.comparativa.puntosParejaHabitualVisitante} + ' puntos)'"></span></li>
+            <li><strong>Victorias totales:</strong> <span th:text="${#numbers.formatDecimal(partido.comparativa.porcentajeTotalVisitante, 1, 2)} + '% (' + ${partido.comparativa.puntosVictoriasTotalesVisitante} + ' puntos)'"></span></li>
+            <li><strong>Victorias en superficie:</strong> <span th:text="${#numbers.formatDecimal(partido.comparativa.porcentajeSuperficieVisitante, 1, 2)} + '% (' + ${partido.comparativa.puntosSuperficieVisitante} + ' puntos)'"></span></li>
+            <li><strong>Forma reciente:</strong> <span th:text="${#numbers.formatDecimal(partido.comparativa.porcentajeFormaRecienteVisitante, 1, 2)} + '% (' + ${partido.comparativa.puntosFormaRecienteVisitante} + ' puntos)'"></span></li>
+            <li><strong>Historial contra rival:</strong> <span th:text="${partido.comparativa.partidosGanadosContraRivalVisitante} + ' ganados (' + ${partido.comparativa.puntosHistorialVsRivalVisitante} + ' puntos)'"></span></li>
+            <li><strong>Experiencia jugador 1:</strong> <span th:text="${partido.comparativa.partidosTotalesJugador1Visitante}"></span></li>
+            <li><strong>Experiencia jugador 2:</strong> <span th:text="${partido.comparativa.partidosTotalesJugador2Visitante}"></span></li>
+            <li><strong>Total Experiencia:</strong> <span th:text="${partido.comparativa.partidosTotalesJugador1Visitante + partido.comparativa.partidosTotalesJugador2Visitante} + ' (' + ${partido.comparativa.puntosExperienciaIndividualVisitante} + ' puntos)'"></span></li>
+            <li><strong>Ranking jugador 1:</strong> <span th:text="${partido.comparativa.rankingJugador1Visitante}"></span></li>
+            <li><strong>Ranking jugador 2:</strong> <span th:text="${partido.comparativa.rankingJugador2Visitante}"></span></li>
+            <li><strong>Puntos ranking:</strong> <span th:text="${partido.comparativa.puntosRankingVisitante} + ' puntos'"></span></li>
+        </ul>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: pie"></div>
+</body>
+</html>

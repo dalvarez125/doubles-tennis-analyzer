@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Ranking de Parejas - ' + ${categoria})"></head>
+<body>
+<div th:replace="fragments/navbar :: navbar('Ranking de Parejas - ' + ${categoria})"></div>
+
+
+<!-- Formulario de filtros -->
+<form th:action="@{/ranking/parejas}" method="get">
+    <input type="hidden" name="categoria" th:value="${categoria}">
+
+    <label for="superficie">Superficie:</label>
+    <select id="superficie" name="superficie">
+        <option value="">Todas</option>
+        <option value="Tierra" th:selected="${superficie == 'Tierra'}">Tierra</option>
+        <option value="Dura" th:selected="${superficie == 'Dura'}">Dura</option>
+        <option value="Hierba" th:selected="${superficie == 'Hierba'}">Hierba</option>
+    </select>
+
+    <label for="desde">Desde:</label>
+    <input type="date" id="desde" name="desde" th:value="${desde}">
+
+    <label for="hasta">Hasta:</label>
+    <input type="date" id="hasta" name="hasta" th:value="${hasta}">
+
+    <label for="minPartidos">M&iacute;n. Partidos:</label>
+    <input type="number" id="minPartidos" name="minPartidos" min="0" th:value="${minPartidos}">
+    
+    <label for="favorito">
+        <input type="checkbox" id="favorito" name="favorito" th:checked="${favorito}" />
+        Favorito
+    </label>
+
+    <button type="submit">Filtrar</button>
+</form>
+
+<!-- Tabla de resultados -->
+<table>
+    <thead>
+        <tr>
+            <th>Pareja</th>
+            <th>Victorias</th>
+            <th>Derrotas</th>
+            <th>Total</th>
+            <th>% Victorias</th>
+            <th>Favorito</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="p : ${ranking}">
+        	<td th:with="
+			        baseUrl='/detalle/pareja/' + ${p.id},
+			        catParam=${categoria} != null ? '&categoria=' + ${categoria} : '',
+			        supParam=${superficie} != null ? '&superficie=' + ${superficie} : '',
+			        desdeParam=${desde} != null ? '&desde=' + ${desde} : '',
+			        hastaParam=${hasta} != null ? '&hasta=' + ${hasta} : '',
+			        minParam=${minPartidos} != null ? '&minPartidos=' + ${minPartidos} : '',
+			        favorito=${favorito} != null ? '&favorito=' + ${favorito} : '',
+			        fullUrl=${baseUrl} + '?' + ${#strings.substring(catParam + supParam + desdeParam + hastaParam + minParam + favorito, 1)}">
+			    
+			    <a th:href="@{${fullUrl}}"
+			       th:text="${p.jugador1 + ' / ' + p.jugador2}"></a>
+			</td>
+            <td th:text="${p.victorias}"></td>
+            <td th:text="${p.derrotas}"></td>
+            <td th:text="${p.totalPartidos}"></td>
+            <td th:text="${p.porcentaje} + '%'"></td>
+            <td>
+			    <form th:action="@{'/pareja/favorito/' + ${p.id}}" method="post" style="display:inline;">
+			        <input type="hidden" name="categoria" th:value="${categoria}">
+			        <input type="hidden" name="superficie" th:value="${superficie}">
+			        <input type="hidden" name="desde" th:value="${desde}">
+			        <input type="hidden" name="hasta" th:value="${hasta}">
+			        <input type="hidden" name="minPartidos" th:value="${minPartidos}">
+			        <button type="submit" class="btn-icon" title="Marcar como favorita" style="background:none; border:none; cursor:pointer;">
+			            <i class="fa-heart"
+			               th:classappend="${p.favorito} ? 'fas text-red' : 'far text-grey'">
+			            </i>
+			        </button>
+			    </form>
+			</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Pie de página -->
+<div th:replace="fragments/footer :: pie"></div>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Pr&oacute;ximos Partidos')"></head>
+<body>
+<div th:replace="fragments/navbar :: navbar('Pr&oacute;ximos Partidos')"></div>
+
+<form method="get" th:action="@{/partido/proximos}" style="margin-bottom: 20px;">
+    <label for="categoria">Categor&iacute;a:</label>
+    <select name="categoria" id="categoria">
+        <option value="">Todas</option>
+        <option value="ATP" th:selected="${categoria == 'ATP'}">ATP</option>
+        <option value="WTA" th:selected="${categoria == 'WTA'}">WTA</option>
+        <option value="ITF Men" th:selected="${categoria == 'ITF Men'}">ITF Men</option>
+        <option value="ITF Women" th:selected="${categoria == 'ITF Women'}">ITF Women</option>
+    </select>
+
+    <label for="favorito">
+        <input type="checkbox" id="favorito" name="favorito" th:checked="${favorito}" />
+        Favorito
+    </label>
+    
+    <label for="ordenPronostico">
+        <input type="checkbox" id="ordenPronostico" name="ordenPronostico" th:checked="${ordenPronostico}" />
+        Ordenar por pron&oacute;stico
+    </label>
+    
+    <label for="soloCerrados">
+        <input type="checkbox" id="soloCerrados" name="soloCerrados" th:checked="${soloCerrados}" />
+        Solo cerrados
+    </label>
+
+    <button type="submit">Filtrar</button>
+</form>
+
+<div class="partidos-container">
+	<div class="partido-card"
+     th:each="partido : ${partidos}"
+     th:classappend="${partido.estiloComparativa}">
+        <div class="equipo equipo-local">
+            <p th:text="${partido.parejaLocalNombre}"></p>
+        </div>
+
+        <div class="info-central" th:with="
+			        baseUrl='/partido/detalle/' + ${partido.id},
+			        catParam=${categoria} != null ? '&categoria=' + ${categoria} : '',
+			        favorito=${favorito} != null ? '&favorito=' + ${favorito} : '',
+			        ordenPronostico=${ordenPronostico} != null ? '&ordenPronostico=' + ${ordenPronostico} : '',
+			        fullUrl=${baseUrl} + '?' + ${#strings.substring(catParam + favorito + ordenPronostico, 1)}">
+            <div class="info-item">
+                <strong>Fecha:</strong> <span th:text="${partido.fecha}"></span>
+            </div>
+            <div class="info-item">
+                <strong>Hora:</strong> <span th:text="${partido.hora}"></span>
+            </div>
+            <div class="info-item">
+                <strong>Torneo:</strong> <span th:text="${partido.torneo}"></span>
+            </div>
+            <div class="info-item">
+                <strong>Ronda:</strong> <span th:text="${partido.ronda}"></span>
+            </div>
+            <div class="info-item">
+                <strong>Superficie:</strong> <span th:text="${partido.superficie}"></span>
+            </div>
+            <div class="info-item">
+                <strong>Categor&iacute;a:</strong> <span th:text="${partido.categoria}"></span>
+            </div>
+
+            <a th:href="@{${fullUrl}}">
+	            <div th:if="${partido.comparativa.puntosLocal + partido.comparativa.puntosVisitante > 0}">
+				    <div class="barra-comparativa">
+				    	
+				        <div class="barra-local"
+				             th:style="'width:' + (${partido.comparativa.puntosLocal} * 100.0 / (${partido.comparativa.puntosLocal} + ${partido.comparativa.puntosVisitante})) + '%'">
+				        </div>
+				        <div class="barra-visitante"
+				             th:style="'width:' + (${partido.comparativa.puntosVisitante} * 100.0 / (${partido.comparativa.puntosLocal} + ${partido.comparativa.puntosVisitante})) + '%'">
+				        </div>
+			        </div>
+			    </div>
+			    <div th:if="${partido.comparativa.puntosLocal + partido.comparativa.puntosVisitante == 0}">
+			        <div class="barra-comparativa">
+				        <div class="barra-local" style="width: 50%;"></div>
+				        <div class="barra-visitante" style="width: 50%;"></div>
+				    </div>
+			    </div>
+			</a>
+
+    <div th:if="${partido.comparativa.puntosLocal + partido.comparativa.puntosVisitante == 0}">
+        <div class="barra-local" style="width: 50%;"></div>
+        <div class="barra-visitante" style="width: 50%;"></div>
+    </div>
+			
+			<div class="puntos-comparativa">
+			    <span th:text="${partido.comparativa.puntosLocal} + ' puntos'"></span>
+			    <span th:text="${partido.comparativa.puntosVisitante} + ' puntos'"></span>
+			</div>
+        </div>
+
+        <div class="equipo equipo-visitante">
+            <p th:text="${partido.parejaVisitanteNombre}"></p>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: pie"></div>
+</body>
+</html>
+

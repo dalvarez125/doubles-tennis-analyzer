@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<div th:fragment="navbar(titulo)">
+    <nav class="navbar">
+        <a href="/" class="nav-home" title="Inicio">
+            <i class="fas fa-home"></i>
+        </a>
+        <span class="nav-title" th:text="${titulo}">Sección</span>
+    </nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Detalle de Pareja')"></head>
+<body>
+
+<!-- Barra de navegación con flecha de volver y título -->
+<nav class="navbar">
+    <a th:href="@{${urlRetorno}}" class="nav-back" title="Volver al ranking">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <span class="nav-title" th:text="${titulo}">Detalle de la pareja</span>
+</nav>
+
+<!-- Tabla de detalle de partidos -->
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Rivales</th>
+            <th>Torneo</th>
+            <th>Ronda</th>
+            <th>Superficie</th>
+            <th>Marcador</th>
+            <th>Resultado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="p : ${partidos}">
+            <td th:text="${p.fecha}"></td>
+            <td th:text="${p.rivales}"></td>
+            <td th:text="${p.torneo}"></td>
+            <td th:text="${p.ronda}"></td>
+            <td th:text="${p.superficie}"></td>
+            <td th:text="${p.marcador}"
+			    th:classappend="${p.resultado == 'Victoria'} ? 'resultado-victoria' : 'resultado-derrota'">
+			</td>
+			<td th:text="${p.resultado}"
+			    th:classappend="${p.resultado == 'Victoria'} ? 'resultado-victoria' : 'resultado-derrota'">
+			</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Pie de página -->
+<div th:replace="fragments/footer :: pie"></div>
+
+</body>
+</html>
