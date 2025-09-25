@@ -15,7 +15,7 @@ public class PesosComparativaConfig {
 	private Map<String, Integer> atp;
     private Map<String, Integer> itf;
 
-    public int getPeso(String categoria, String criterio) {
+    public int getPeso(String categoria, String criterio, Integer partidos) {
         if (categoria == null || criterio == null) return 0;
 
         categoria = categoria.toLowerCase();
@@ -24,11 +24,19 @@ public class PesosComparativaConfig {
         switch (categoria) {
             case "atp":
             case "wta":
-                return atp.getOrDefault(criterio, 0);
+            	if (partidos == null || partidos >= 20) {
+            		return atp.getOrDefault(criterio, 0);
+            	} else {
+            		return atp.getOrDefault(criterio, 0)/2;
+            	}
             case "itf men":
             case "itf women":
             case "itf":
-                return itf.getOrDefault(criterio, 0);
+            	if (partidos == null || partidos >= 20) {
+            		return itf.getOrDefault(criterio, 0);
+            	} else {
+            		return itf.getOrDefault(criterio, 0)/2;
+            	}
             default:
                 return 0;
         }

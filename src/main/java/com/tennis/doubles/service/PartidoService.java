@@ -293,10 +293,10 @@ public class PartidoService {
         dto.setParejaLocalEsHabitual(esHabitualLocal);
         dto.setParejaVisitanteEsHabitual(esHabitualVisitante);
 
-        dto.setPuntosParejaHabitualLocal(esHabitualLocal ? pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual") : 
-        	partidosLocal >= 10 ? ((int) pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual") / 2) : 0);
-        dto.setPuntosParejaHabitualVisitante(esHabitualVisitante ? pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual") : 
-        	partidosVisitante >= 10 ? ((int) pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual") / 2) : 0);
+        dto.setPuntosParejaHabitualLocal(esHabitualLocal ? pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual", null) : 
+        	partidosLocal >= 10 ? ((int) pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual", null) / 2) : 0);
+        dto.setPuntosParejaHabitualVisitante(esHabitualVisitante ? pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual", null) : 
+        	partidosVisitante >= 10 ? ((int) pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual", null) / 2) : 0);
 
         //Se obtienen las estadisticas de cada jugador
         String categoria = partido.getCategoria().contains("ITF") ? partido.getCategoria() : "ATP/WTA";
@@ -431,10 +431,7 @@ public class PartidoService {
 	        }
 
 	    } else {
-	        // Jugadores individuales → media
-	        if (dto.getPartidosTotalesJugador1Local() + dto.getPartidosTotalesJugador2Local() >= 20) {
-	        	cargarEstadisticasJugadores(dto, partido.getJugador1Id(), partido.getJugador2Id(), categoria, true, partido.getSuperficie(), stats1, stats2);
-	        }
+	    	cargarEstadisticasJugadores(dto, partido.getJugador1Id(), partido.getJugador2Id(), categoria, true, partido.getSuperficie(), stats1, stats2);
 	    }
 
 	    // ------------------ VISITANTE ------------------
@@ -449,18 +446,16 @@ public class PartidoService {
 	        
 
 	    } else {
-	        if (dto.getPartidosTotalesJugador1Visitante() + dto.getPartidosTotalesJugador2Visitante() >= 20) {
-	        	cargarEstadisticasJugadores(dto, partido.getJugador3Id(), partido.getJugador4Id(), categoria, false, partido.getSuperficie(), stats3, stats4);
-	        }
+	    	cargarEstadisticasJugadores(dto, partido.getJugador3Id(), partido.getJugador4Id(), categoria, false, partido.getSuperficie(), stats3, stats4);
 	    }
 	    
-	    dto.setPuntosVictoriasTotalesLocal((int) calculoPuntos(dto.getPorcentajeTotalLocal(), pesosComparativaConfig.getPeso(partido.getCategoria(), "total")));
-        dto.setPuntosSuperficieLocal((int) calculoPuntos(dto.getPorcentajeSuperficieLocal(), pesosComparativaConfig.getPeso(partido.getCategoria(), "superficie")));
-        dto.setPuntosFormaRecienteLocal((int) calculoPuntos(dto.getPorcentajeFormaRecienteLocal(), pesosComparativaConfig.getPeso(partido.getCategoria(), "forma")));
+	    dto.setPuntosVictoriasTotalesLocal((int) calculoPuntos(dto.getPorcentajeTotalLocal(), pesosComparativaConfig.getPeso(partido.getCategoria(), "total", dto.getPartidosTotalesJugador1Local() + dto.getPartidosTotalesJugador2Local())));
+        dto.setPuntosSuperficieLocal((int) calculoPuntos(dto.getPorcentajeSuperficieLocal(), pesosComparativaConfig.getPeso(partido.getCategoria(), "superficie", dto.getPartidosTotalesJugador1Local() + dto.getPartidosTotalesJugador2Local())));
+        dto.setPuntosFormaRecienteLocal((int) calculoPuntos(dto.getPorcentajeFormaRecienteLocal(), pesosComparativaConfig.getPeso(partido.getCategoria(), "forma", dto.getPartidosTotalesJugador1Local() + dto.getPartidosTotalesJugador2Local())));
         
-        dto.setPuntosVictoriasTotalesVisitante((int) calculoPuntos(dto.getPorcentajeTotalVisitante(), pesosComparativaConfig.getPeso(partido.getCategoria(), "total")));
-        dto.setPuntosSuperficieVisitante((int) calculoPuntos(dto.getPorcentajeSuperficieVisitante(), pesosComparativaConfig.getPeso(partido.getCategoria(), "superficie")));
-        dto.setPuntosFormaRecienteVisitante((int) calculoPuntos(dto.getPorcentajeFormaRecienteVisitante(), pesosComparativaConfig.getPeso(partido.getCategoria(), "forma")));
+        dto.setPuntosVictoriasTotalesVisitante((int) calculoPuntos(dto.getPorcentajeTotalVisitante(), pesosComparativaConfig.getPeso(partido.getCategoria(), "total", dto.getPartidosTotalesJugador1Visitante() + dto.getPartidosTotalesJugador2Visitante())));
+        dto.setPuntosSuperficieVisitante((int) calculoPuntos(dto.getPorcentajeSuperficieVisitante(), pesosComparativaConfig.getPeso(partido.getCategoria(), "superficie", dto.getPartidosTotalesJugador1Visitante() + dto.getPartidosTotalesJugador2Visitante())));
+        dto.setPuntosFormaRecienteVisitante((int) calculoPuntos(dto.getPorcentajeFormaRecienteVisitante(), pesosComparativaConfig.getPeso(partido.getCategoria(), "forma", dto.getPartidosTotalesJugador1Visitante() + dto.getPartidosTotalesJugador2Visitante())));
 
     }
 	
@@ -575,10 +570,10 @@ public class PartidoService {
 	    int diff = ganadosLocal - ganadosVisitante;
 
 	    if (diff > 0) {
-	        dto.setPuntosHistorialVsRivalLocal(pesosComparativaConfig.getPeso(categoria, "h2h"));
+	        dto.setPuntosHistorialVsRivalLocal(pesosComparativaConfig.getPeso(categoria, "h2h", null));
 	        dto.setPuntosHistorialVsRivalVisitante(0);
 	    } else if (diff < 0) {
-	        dto.setPuntosHistorialVsRivalVisitante(pesosComparativaConfig.getPeso(categoria, "h2h"));
+	        dto.setPuntosHistorialVsRivalVisitante(pesosComparativaConfig.getPeso(categoria, "h2h", null));
 	        dto.setPuntosHistorialVsRivalLocal(0);
 	    }
 	}
@@ -591,13 +586,13 @@ public class PartidoService {
 
 	    dto.setPuntosExperienciaIndividualLocal(
 	    		(total1 + total2) > 200 
-	    	        ? pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia") 
-	    	        : (int) Math.round((double) (total1 + total2) * pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia") / 200)
+	    	        ? pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia", null) 
+	    	        : (int) Math.round((double) (total1 + total2) * pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia", null) / 200)
 	    	);
 	    dto.setPuntosExperienciaIndividualVisitante(
 	    		(total3 + total4) > 200 
-	    	        ? pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia") 
-	    	        : (int) Math.round((double) (total3 + total4) * pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia") / 200)
+	    	        ? pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia", null) 
+	    	        : (int) Math.round((double) (total3 + total4) * pesosComparativaConfig.getPeso(partido.getCategoria(), "experiencia", null) / 200)
 	    	);
 	}
 	
