@@ -260,7 +260,7 @@ public class PartidoService {
         	
             ResumenComparativaDTO comparativa = calcularComparativaPartido(partido);
             partido.setComparativa(comparativa);
-            partido.setEstiloComparativa(calcularEstiloComparativa(comparativa, partido.getCategoria()));
+            partido.setEstiloComparativa(calcularEstiloComparativa(partido));
             
         }
         return partidosFuturos;
@@ -596,14 +596,14 @@ public class PartidoService {
 	    	);
 	}
 	
-	private String calcularEstiloComparativa(ResumenComparativaDTO comparativa, String categoria) {
-	    int puntosLocal = comparativa.getPuntosLocal();
-	    int puntosVisitante = comparativa.getPuntosVisitante();
+	private String calcularEstiloComparativa(ProximosPartidosDTO partido) {
+	    int puntosLocal = partido.getComparativa().getPuntosLocal();
+	    int puntosVisitante = partido.getComparativa().getPuntosVisitante();
 	    int diferencia = Math.abs(puntosLocal - puntosVisitante);
 	    int minPuntos = Math.min(puntosLocal, puntosVisitante);
 
-	    if (categoria.contains("ITF")) {
-	    	if (diferencia >= 50) {
+	    if (partido.getCategoria().contains("ITF")) {
+	    	if (diferencia >= 60) {
 	    		
 		    	return "resaltado-fuerte";
 		        
