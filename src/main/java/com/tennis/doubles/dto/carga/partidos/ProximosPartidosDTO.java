@@ -29,4 +29,6 @@ public class ProximosPartidosDTO {
     
     private ResumenComparativaDTO comparativa;
     private String estiloComparativa;
+    private Double cuotaLocal;
+    private Double cuotaVisitante;
 }

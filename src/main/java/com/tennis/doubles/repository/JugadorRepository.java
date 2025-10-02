@@ -125,4 +125,12 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 		    @Param("fechaFin") LocalDate fechaFin,
 		    @Param("minPartidos") int minPartidos
 		);
+	
+	@Query("""
+	        SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END
+	        FROM Jugador j
+	        WHERE j.id = :jugadorId
+	          AND (LOWER(j.categoria) LIKE '%wta%' OR LOWER(j.categoria) LIKE '%women%')
+	        """)
+	    boolean isFemenino(@Param("jugadorId") Long jugadorId);
 }

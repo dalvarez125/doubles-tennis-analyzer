@@ -40,6 +40,8 @@
      th:classappend="${partido.estiloComparativa}">
         <div class="equipo equipo-local">
             <p th:text="${partido.parejaLocalNombre}"></p>
+            <small class="cuota" th:if="${partido.cuotaLocal != null}"
+          		th:text="'Cuota: ' + ${#numbers.formatDecimal(partido.cuotaLocal, 1, 2)}"></small>
         </div>
 
         <div class="info-central" th:with="
@@ -87,19 +89,21 @@
 			    </div>
 			</a>
 
-    <div th:if="${partido.comparativa.puntosLocal + partido.comparativa.puntosVisitante == 0}">
-        <div class="barra-local" style="width: 50%;"></div>
-        <div class="barra-visitante" style="width: 50%;"></div>
-    </div>
+		    <div th:if="${partido.comparativa.puntosLocal + partido.comparativa.puntosVisitante == 0}">
+		        <div class="barra-local" style="width: 50%;"></div>
+		        <div class="barra-visitante" style="width: 50%;"></div>
+		    </div>
 			
 			<div class="puntos-comparativa">
 			    <span th:text="${partido.comparativa.puntosLocal} + ' puntos'"></span>
 			    <span th:text="${partido.comparativa.puntosVisitante} + ' puntos'"></span>
 			</div>
-        </div>
+    	</div>
 
         <div class="equipo equipo-visitante">
             <p th:text="${partido.parejaVisitanteNombre}"></p>
+            <small class="cuota" th:if="${partido.cuotaVisitante != null}"
+          		th:text="'Cuota: ' + ${#numbers.formatDecimal(partido.cuotaVisitante, 1, 2)}"></small>
         </div>
     </div>
 </div>

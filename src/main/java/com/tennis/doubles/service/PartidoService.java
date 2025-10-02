@@ -27,6 +27,8 @@ import com.tennis.doubles.dto.carga.partidos.EventoDTO;
 import com.tennis.doubles.dto.carga.partidos.ProximosPartidosDTO;
 import com.tennis.doubles.dto.carga.partidos.ResumenComparativaDTO;
 import com.tennis.doubles.dto.carga.partidos.SubEquipoDTO;
+import com.tennis.doubles.dto.cuotas.CuotasDTO;
+import com.tennis.doubles.dto.cuotas.OpcionCuotaDTO;
 import com.tennis.doubles.model.Jugador;
 import com.tennis.doubles.model.Pareja;
 import com.tennis.doubles.model.EstadisticasJugador;
@@ -53,11 +55,12 @@ public class PartidoService {
     private final ParejaEstadisticasRepository parejaEstadisticasRepository;
     private final JugadorEstadisticasRepository jugadorEstadisticasRepository;
     private final PesosComparativaConfig pesosComparativaConfig;
+    private final PrediccionPartidoService prediccionPartidoService;
     
     private List<ProximosPartidosDTO> partidosEnMemoria = new ArrayList<>();
     private LocalDate ultimaActualizacion;
 	
-	public PartidoService(TorneoRepository torneoRepository, ParejaRepository parejaRepository, JugadorRepository jugadorRepository, AllSportsApiService allSportsApiService, PartidoRepository partidoRepository, PesosComparativaConfig pesosComparativaConfig, ParejaEstadisticasRepository parejaEstadisticasRepository, JugadorEstadisticasRepository jugadorEstadisticasRepository) {
+	public PartidoService(TorneoRepository torneoRepository, ParejaRepository parejaRepository, JugadorRepository jugadorRepository, AllSportsApiService allSportsApiService, PartidoRepository partidoRepository, PesosComparativaConfig pesosComparativaConfig, ParejaEstadisticasRepository parejaEstadisticasRepository, JugadorEstadisticasRepository jugadorEstadisticasRepository, PrediccionPartidoService prediccionPartidoService) {
 		this.jugadorRepository = jugadorRepository;
 		this.parejaRepository = parejaRepository;
 		this.torneoRepository = torneoRepository;
@@ -66,6 +69,7 @@ public class PartidoService {
 		this.parejaEstadisticasRepository = parejaEstadisticasRepository;
 		this.jugadorEstadisticasRepository = jugadorEstadisticasRepository;
 		this.pesosComparativaConfig = pesosComparativaConfig;
+		this.prediccionPartidoService = prediccionPartidoService;
     }
 	
 	public List<ProximosPartidosDTO> getProximosPartidos(String categoria, boolean soloFavoritos, boolean ordenPronostico, boolean soloCerrados, boolean refrescar) {
@@ -100,7 +104,7 @@ public class PartidoService {
         return partidosEnMemoria.stream()
             .filter(p -> categoria == null || categoria.isEmpty() || p.getCategoria().equalsIgnoreCase(categoria))
             .filter(p -> !soloFavoritos || contieneJugadorFavorito(p, idsJugadoresFavoritos))
-            .filter(p -> !soloCerrados || p.getEstiloComparativa().equals("resaltado-fuerte"))
+            .filter(p -> !soloCerrados || !p.getEstiloComparativa().equals(""))
             .collect(Collectors.toList());
     }
 	
@@ -116,9 +120,11 @@ public class PartidoService {
 		//Se realizan 3 llamadas al API para obtener los partidos de los proximos 3 días
 		LocalDate fecha = LocalDate.now();
 		List<ProximosPartidosDTO> listaPartidos = new ArrayList<ProximosPartidosDTO>();
+		
 		for (int i = 1; i <= 3; i++) {
 			try {
 				List<EventoDTO> listaEventos = allSportsApiService.obtenerEventosPorFecha(fecha);
+				Map<String,CuotasDTO> mapaCuotas = allSportsApiService.obtenerCuotasPorFecha(fecha);
 				for (EventoDTO evento : listaEventos) {
 		        	if (!esDobles(evento.getHomeTeam()) || !esDobles(evento.getAwayTeam()) 
 		        			|| esDoblesMixtos(evento.getHomeTeam()) || esDoblesMixtos(evento.getAwayTeam()) 
@@ -135,15 +141,27 @@ public class PartidoService {
 			        	String superficie = evento.getTournament().getUniqueTournament().getGroundType();
 			            torneoRepository.findByNombreAndAnio(nombreTorneo, anio)
 			                    .orElseGet(() -> {
-			                        Torneo nuevoTorneo = new Torneo(idTorneo, nombreTorneo, superficie, evento.getTournament().getCategory().getName(), anio);
+			                    	String categoria = evento.getTournament().getCategory().getName();
+			                    	if (!categoria.toUpperCase().contains("ITF")) {
+			                    		categoria = "ATP/WTA";
+			                    	}
+			                        Torneo nuevoTorneo = new Torneo(idTorneo, nombreTorneo, superficie, categoria, anio);
 			                        return torneoRepository.save(nuevoTorneo);
 			                    });
 			
 			            // Procesar jugadores
-			            Jugador jugador1 = guardarJugador(evento.getHomeTeam().getSubTeams().get(0), evento.getTournament().getCategory().getName());
-			            Jugador jugador2 = guardarJugador(evento.getHomeTeam().getSubTeams().get(1), evento.getTournament().getCategory().getName());
-			            Jugador jugador3 = guardarJugador(evento.getAwayTeam().getSubTeams().get(0), evento.getTournament().getCategory().getName());
-			            Jugador jugador4 = guardarJugador(evento.getAwayTeam().getSubTeams().get(1), evento.getTournament().getCategory().getName());
+			            String categoriaJugador = evento.getTournament().getCategory().getName();
+			            if (categoriaJugador.equals("ITF Men")) {
+			            	categoriaJugador = "ATP";
+			            } else {
+			            	if (categoriaJugador.equals("ITF Women")) {
+				            	categoriaJugador = "WTA";
+				            }
+			            }
+			            Jugador jugador1 = guardarJugador(evento.getHomeTeam().getSubTeams().get(0), categoriaJugador);
+			            Jugador jugador2 = guardarJugador(evento.getHomeTeam().getSubTeams().get(1), categoriaJugador);
+			            Jugador jugador3 = guardarJugador(evento.getAwayTeam().getSubTeams().get(0), categoriaJugador);
+			            Jugador jugador4 = guardarJugador(evento.getAwayTeam().getSubTeams().get(1), categoriaJugador);
 			
 			            // Procesar parejas
 			            Pareja parejaLocal = guardarPareja(jugador1, jugador2, evento.getHomeTeam().getId());
@@ -173,6 +191,7 @@ public class PartidoService {
 				            partido.setJugador3Id(jugador3.getId());
 				            partido.setJugador4Id(jugador4.getId());
 				            partido.setId(evento.getId());
+				            asignarCuotasAlPartido(partido, mapaCuotas);
 				            
 				            listaPartidos.add(partido);
 			            }
@@ -596,33 +615,89 @@ public class PartidoService {
 	    	);
 	}
 	
+	public void asignarCuotasAlPartido(ProximosPartidosDTO partido, Map<String, CuotasDTO> mapaOdds) {
+	    if (partido == null || mapaOdds == null) {
+	        return;
+	    }
+
+	    // Buscar el objeto de cuotas según el id del partido
+	    CuotasDTO cuotasDTO = mapaOdds.get(String.valueOf(partido.getId()));
+	    if (cuotasDTO == null || cuotasDTO.getChoices() == null) {
+	        return;
+	    }
+
+	    Double cuotaLocal = null;
+	    Double cuotaVisitante = null;
+
+	    for (OpcionCuotaDTO opcion : cuotasDTO.getChoices()) {
+	        if ("1".equals(opcion.getName())) {
+	            cuotaLocal = convertirFraccionalADecimal(opcion.getFractionalValue());
+	        } else if ("2".equals(opcion.getName())) {
+	            cuotaVisitante = convertirFraccionalADecimal(opcion.getFractionalValue());
+	        }
+	    }
+
+	    partido.setCuotaLocal(cuotaLocal);
+	    partido.setCuotaVisitante(cuotaVisitante);
+	}
+
+	private Double convertirFraccionalADecimal(String fraccional) {
+	    try {
+	        if (fraccional == null || fraccional.isBlank()) return null;
+
+	        String[] partes = fraccional.split("/");
+	        if (partes.length != 2) return null;
+
+	        double numerador = Double.parseDouble(partes[0]);
+	        double denominador = Double.parseDouble(partes[1]);
+
+	        return (numerador / denominador) + 1.0; // Ejemplo: 8/1 → 9.0
+	    } catch (Exception e) {
+	        return null;
+	    }
+	}
+
+	
 	private String calcularEstiloComparativa(ProximosPartidosDTO partido) {
 	    int puntosLocal = partido.getComparativa().getPuntosLocal();
 	    int puntosVisitante = partido.getComparativa().getPuntosVisitante();
 	    int diferencia = Math.abs(puntosLocal - puntosVisitante);
 	    int minPuntos = Math.min(puntosLocal, puntosVisitante);
+	    Double cuota = puntosLocal > puntosVisitante ? partido.getCuotaLocal() : partido.getCuotaVisitante();
 
 	    if (partido.getCategoria().contains("ITF")) {
-	    	if (diferencia >= 60) {
-	    		
-		    	return "resaltado-fuerte";
+	    	if (diferencia >= 55) {
+	    		prediccionPartidoService.guardarPrediccion(partido);
+	    		return obtenerEstilo(cuota);
 		        
 		    }else {
 		        return "";
 		    }
 	    } else {
-		    if (diferencia >= 60) {
-	
-		    	return "resaltado-fuerte";
+		    if (diferencia >= 55) {
+		    	prediccionPartidoService.guardarPrediccion(partido);
+		    	return obtenerEstilo(cuota);
 		        
 		    } else if (diferencia >= 45 && minPuntos < 10) {
-		    	return "resaltado-fuerte";
+		    	prediccionPartidoService.guardarPrediccion(partido);
+		    	return obtenerEstilo(cuota);
 		    } else if (diferencia >= 40 && minPuntos == 0) {
-		    	return "resaltado-fuerte";
+		    	prediccionPartidoService.guardarPrediccion(partido);
+		    	return obtenerEstilo(cuota);
 		    }else {
 		        return "";
 		    }
 	    }
+	}
+	
+	private String obtenerEstilo(Double cuota) {
+		if (cuota == null) {
+			return "resaltado-neutro";
+		}
+		if (cuota < 1.2) {
+			return "resaltado-medio";
+		}
+		return "resaltado-fuerte";
 	}
 
 }

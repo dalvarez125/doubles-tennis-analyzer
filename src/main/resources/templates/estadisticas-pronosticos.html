@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Estadísticas de Pronósticos')"></head>
+<body>
+<div th:replace="fragments/navbar :: navbar('Estadísticas de Pronósticos')"></div>
+
+<!-- Formulario de filtros -->
+<form th:action="@{/predicciones}" method="get">
+    <label for="fechaDesde">Desde:</label>
+    <input type="date" id="fechaDesde" name="fechaDesde" 
+           th:value="${fechaDesde}">
+    <label for="fechaHasta">Hasta:</label>
+    <input type="date" id="fechaHasta" name="fechaHasta" 
+           th:value="${fechaHasta}">
+    <button type="submit">Filtrar</button>
+</form>
+
+<div class="detalle-estadisticas">
+
+    <!-- Bloque Total -->
+    <div class="bloque-estadisticas">
+        <h3>Total</h3>
+        <div class="flex-horizontal">
+            <div class="datos-estadistica">
+                <ul>
+                    <li><strong>Pronósticos:</strong> <span th:text="${estadisticas.totalPronosticos}"></span></li>
+                    <li><strong>Aciertos:</strong> <span th:text="${estadisticas.totalAciertos}" style="color:green"></span></li>
+                    <li><strong>Fallos:</strong> <span th:text="${estadisticas.totalFallos}" style="color:red"></span></li>
+                    <li><strong>% Acierto:</strong> <span th:text="${#numbers.formatDecimal(estadisticas.porcentajeAcierto, 1, 2)} + '%'"></span></li>
+                </ul>
+            </div>
+            <div class="grafica-estadistica">
+                <canvas id="graficaTotal"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bloque Cuotas Altas -->
+    <div class="bloque-estadisticas">
+        <h3>Cuota superior a 1,20</h3>
+        <div class="flex-horizontal">
+            <div class="datos-estadistica">
+                <ul>
+                    <li><strong>Pronósticos:</strong> <span th:text="${estadisticasCuotaAlta.totalPronosticos}"></span></li>
+                    <li><strong>Aciertos:</strong> <span th:text="${estadisticasCuotaAlta.totalAciertos}" style="color:green"></span></li>
+                    <li><strong>Fallos:</strong> <span th:text="${estadisticasCuotaAlta.totalFallos}" style="color:red"></span></li>
+                    <li><strong>% Acierto:</strong> <span th:text="${#numbers.formatDecimal(estadisticasCuotaAlta.porcentajeAcierto, 1, 2)} + '%'"></span></li>
+                </ul>
+            </div>
+            <div class="grafica-estadistica">
+                <canvas id="graficaCuota"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloque Masculino/Femenino -->
+    <div class="bloque-estadisticas">
+        <h3>Masculino / Femenino</h3>
+        <div class="flex-horizontal">
+            <div class="datos-estadistica">
+                <ul>
+                    <li><strong>Pronósticos Masculino:</strong> <span th:text="${estadisticasMasculino.totalPronosticos}"></span></li>
+                    <li><strong>Aciertos Masculino:</strong> <span th:text="${estadisticasMasculino.totalAciertos}" style="color:green"></span></li>
+                    <li><strong>Fallos Masculino:</strong> <span th:text="${estadisticasMasculino.totalFallos}" style="color:red"></span></li>
+                    <li><strong>% Acierto Masculino:</strong> <span th:text="${#numbers.formatDecimal(estadisticasMasculino.porcentajeAcierto, 1, 2)} + '%'"></span></li>
+                    <li><strong>Pronósticos Femenino:</strong> <span th:text="${estadisticasFemenino.totalPronosticos}"></span></li>
+                    <li><strong>Aciertos Femenino:</strong> <span th:text="${estadisticasFemenino.totalAciertos}" style="color:green"></span></li>
+                    <li><strong>Fallos Femenino:</strong> <span th:text="${estadisticasFemenino.totalFallos}" style="color:red"></span></li>
+                    <li><strong>% Acierto Femenino:</strong> <span th:text="${#numbers.formatDecimal(estadisticasFemenino.porcentajeAcierto, 1, 2)} + '%'"></span></li>
+                </ul>
+            </div>
+            <div class="grafica-estadistica">
+                <canvas id="graficaSexo"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloque ATP/WTA e ITF -->
+    <div class="bloque-estadisticas">
+        <h3>ATP/WTA / ITF</h3>
+        <div class="flex-horizontal">
+            <div class="datos-estadistica">
+                <ul>
+                    <li><strong>Pronósticos ATP/WTA:</strong> <span th:text="${estadisticasATP_WTA.totalPronosticos}"></span></li>
+                    <li><strong>Aciertos ATP/WTA:</strong> <span th:text="${estadisticasATP_WTA.totalAciertos}" style="color:green"></span></li>
+                    <li><strong>Fallos ATP/WTA:</strong> <span th:text="${estadisticasATP_WTA.totalFallos}" style="color:red"></span></li>
+                    <li><strong>% Acierto ATP/WTA:</strong> <span th:text="${#numbers.formatDecimal(estadisticasATP_WTA.porcentajeAcierto, 1, 2)} + '%'"></span></li>
+                    <li><strong>Pronósticos ITF:</strong> <span th:text="${estadisticasITF.totalPronosticos}"></span></li>
+                    <li><strong>Aciertos ITF:</strong> <span th:text="${estadisticasITF.totalAciertos}" style="color:green"></span></li>
+                    <li><strong>Fallos ITF:</strong> <span th:text="${estadisticasITF.totalFallos}" style="color:red"></span></li>
+                    <li><strong>% Acierto ITF:</strong> <span th:text="${#numbers.formatDecimal(estadisticasITF.porcentajeAcierto, 1, 2)} + '%'"></span></li>
+                </ul>
+            </div>
+            <div class="grafica-estadistica">
+                <canvas id="graficaCategoria"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Script Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    var totalAciertos = [[${estadisticas.totalAciertos}]];
+    var totalFallos = [[${estadisticas.totalFallos}]];
+    var totalAciertosCuota = [[${estadisticasCuotaAlta.totalAciertos}]];
+    var totalFallosCuota = [[${estadisticasCuotaAlta.totalFallos}]];
+    var porcentajeMasculino = parseFloat([[${#numbers.formatDecimal(estadisticasMasculino.porcentajeAcierto, 1, 2)}]]);
+    var porcentajeFemenino = parseFloat([[${#numbers.formatDecimal(estadisticasFemenino.porcentajeAcierto, 1, 2)}]]);
+    var porcentajeATP = parseFloat([[${#numbers.formatDecimal(estadisticasATP_WTA.porcentajeAcierto, 1, 2)}]]);
+    var porcentajeITF = parseFloat([[${#numbers.formatDecimal(estadisticasITF.porcentajeAcierto, 1, 2)}]]);
+
+    const graficaTotal = new Chart(document.getElementById('graficaTotal'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Aciertos totales', 'Fallos totales'],
+            datasets: [{
+                data: [totalAciertos, totalFallos],
+                backgroundColor: ['#4CAF50', '#E53935']
+            }]
+        }
+    });
+    
+    const graficaCuota = new Chart(document.getElementById('graficaCuota'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Aciertos totales', 'Fallos totales'],
+            datasets: [{
+                data: [totalAciertosCuota, totalFallosCuota],
+                backgroundColor: ['#009688', '#FF5722']
+            }]
+        }
+    });
+
+    const graficaSexo = new Chart(document.getElementById('graficaSexo'), {
+        type: 'doughnut',
+        data: {
+            labels: ['% Masculino', '% Femenino'],
+            datasets: [{
+                data: [porcentajeMasculino, porcentajeFemenino],
+                backgroundColor: ['#2196F3', '#E91E63']
+            }]
+        }
+    });
+
+    const graficaCategoria = new Chart(document.getElementById('graficaCategoria'), {
+        type: 'doughnut',
+        data: {
+            labels: ['% ATP/WTA', '% ITF'],
+            datasets: [{
+                data: [porcentajeATP, porcentajeITF],
+                backgroundColor: ['#3F51B5', '#FF9800']
+            }]
+        }
+    });
+</script>
+
+
+<!-- Tabla con partidos pronosticados -->
+<table id="tablaPronosticos">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Torneo</th>
+            <th>Partido</th>
+            <th>Pronóstico</th>
+            <th>Cuota</th>
+            <th>Resultado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="p : ${partidos}" th:attr="data-fecha=${p.fecha}">
+            <td th:text="${p.fecha}"></td>
+            <td th:text="${p.torneo}"></td>
+            <td th:text="${p.parejaLocal} + ' vs ' + ${p.parejaVisitante}"></td>
+            <td th:utext="${p.parejaPronosticada}"></td>
+            <td th:text="${#numbers.formatDecimal(p.cuota, 1, 2)}"></td>
+            <td th:text="${p.resultado}"
+                th:classappend="${p.acierto} ? 'resultado-victoria' : 'resultado-derrota'">
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Controles de navegación -->
+<div style="margin-top: 15px; text-align: center; font-size: 20px;">
+    <button id="btnAnterior" style="font-size: 20px; padding: 5px 15px;">&lt;</button>
+    <span id="fechaActual" style="margin: 0 20px; font-weight: bold;"></span>
+    <button id="btnSiguiente" style="font-size: 20px; padding: 5px 15px;">&gt;</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const filas = document.querySelectorAll("#tablaPronosticos tbody tr");
+
+    // Agrupar filas por fecha
+    const grupos = {};
+    filas.forEach(fila => {
+        const fecha = fila.getAttribute("data-fecha");
+        if (!grupos[fecha]) {
+            grupos[fecha] = [];
+        }
+        grupos[fecha].push(fila);
+    });
+
+    // Ordenar fechas
+    const fechas = Object.keys(grupos).sort();
+
+    let indice = 0;
+
+    function mostrarDia() {
+        // Ocultar todas las filas
+        filas.forEach(fila => fila.style.display = "none");
+
+        // Mostrar solo las de la fecha actual
+        const fecha = fechas[indice];
+        grupos[fecha].forEach(fila => fila.style.display = "");
+
+        // Actualizar texto de la fecha
+        document.getElementById("fechaActual").textContent = fecha;
+    }
+
+    document.getElementById("btnAnterior").addEventListener("click", function() {
+        if (indice > 0) {
+            indice--;
+            mostrarDia();
+        }
+    });
+
+    document.getElementById("btnSiguiente").addEventListener("click", function() {
+        if (indice < fechas.length - 1) {
+            indice++;
+            mostrarDia();
+        }
+    });
+
+    // Mostrar el primer día al cargar
+    mostrarDia();
+});
+</script>
+
+
+<div th:replace="fragments/footer :: pie"></div>
+</body>
+</html>

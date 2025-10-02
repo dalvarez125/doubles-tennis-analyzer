@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tennis.doubles.dto.carga.partidos.EventoDTO;
 import com.tennis.doubles.dto.carga.partidos.RespuestaEventosDTO;
+import com.tennis.doubles.dto.cuotas.CuotasDTO;
+import com.tennis.doubles.dto.cuotas.RespuestaCuotasDTO;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AllSportsApiService {
@@ -31,7 +34,7 @@ public class AllSportsApiService {
     private static final String API_HOST = "allsportsapi2.p.rapidapi.com";
 
     public List<EventoDTO> obtenerEventosPorFecha(LocalDate fecha) throws IOException, InterruptedException {
-        String url = construirUrlParaFecha(fecha);
+        String url = construirUrlParaFecha(fecha, false);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -54,10 +57,35 @@ public class AllSportsApiService {
         }
     }
 
-    private String construirUrlParaFecha(LocalDate fecha) {
+    private String construirUrlParaFecha(LocalDate fecha, boolean cuotas) {
         int dia = fecha.getDayOfMonth();
         int mes = fecha.getMonthValue();
         int anio = fecha.getYear();
-        return "https://" + API_HOST + "/api/tennis/events/" + dia + "/" + mes + "/" + anio;
+        String endpoint = "https://" + API_HOST + "/api/tennis/events/" + (cuotas ? "odds/" : "");
+        return endpoint + dia + "/" + mes + "/" + anio;
+    }
+    
+    public Map<String,CuotasDTO> obtenerCuotasPorFecha(LocalDate fecha) throws IOException, InterruptedException {
+        String url = construirUrlParaFecha(fecha, true);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("x-rapidapi-key", apiKey)
+                .header("x-rapidapi-host", API_HOST)
+                .GET()
+                .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+
+        String json = response.body();
+
+        try {
+            RespuestaCuotasDTO respuesta = objectMapper.readValue(json, new TypeReference<>() {});
+            return respuesta.getOdds();
+        } catch (JsonProcessingException e) {
+            // O guardar el JSON en un archivo para analizarlo luego
+            Files.writeString(Path.of("respuesta_error.json"), json);
+            return Collections.emptyMap(); // o lanzar una excepción controlada
+        }
     }
 }
