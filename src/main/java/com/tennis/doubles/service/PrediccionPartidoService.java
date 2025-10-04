@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,9 @@ import com.tennis.doubles.repository.PrediccionPartidoRepository;
 
 @Service
 public class PrediccionPartidoService {
+	
+	@Value("${env-dev}")
+    private boolean envDev;
 
     private final PrediccionPartidoRepository prediccionPartidoRepository;
     private final PartidoRepository partidoRepository;
@@ -36,24 +40,26 @@ public class PrediccionPartidoService {
 
     @Transactional
     public void guardarPrediccion(ProximosPartidosDTO dto) {
-    	PrediccionPartido prediccion = prediccionPartidoRepository.findById(dto.getId())
-    	        .orElseGet(PrediccionPartido::new);
-        prediccion.setId(dto.getId());
-        prediccion.setParejaGanadoraId(
-                dto.getComparativa().getPuntosLocal() > dto.getComparativa().getPuntosVisitante()
-                        ? dto.getParejaLocalId()
-                        : dto.getParejaVisitanteId()
-        );
-        prediccion.setPuntosLocal(dto.getComparativa().getPuntosLocal());
-        prediccion.setPuntosVisitante(dto.getComparativa().getPuntosVisitante());
-        
-        if (prediccion.getCuota() == null) {
-        	prediccion.setCuota(dto.getComparativa().getPuntosLocal() > dto.getComparativa().getPuntosVisitante()
-                        ? dto.getCuotaLocal()
-                        : dto.getCuotaVisitante());
-        }
-
-        prediccionPartidoRepository.save(prediccion);
+    	if (envDev) {
+	    	PrediccionPartido prediccion = prediccionPartidoRepository.findById(dto.getId())
+	    	        .orElseGet(PrediccionPartido::new);
+	        prediccion.setId(dto.getId());
+	        prediccion.setParejaGanadoraId(
+	                dto.getComparativa().getPuntosLocal() > dto.getComparativa().getPuntosVisitante()
+	                        ? dto.getParejaLocalId()
+	                        : dto.getParejaVisitanteId()
+	        );
+	        prediccion.setPuntosLocal(dto.getComparativa().getPuntosLocal());
+	        prediccion.setPuntosVisitante(dto.getComparativa().getPuntosVisitante());
+	        
+	        if (prediccion.getCuota() == null) {
+	        	prediccion.setCuota(dto.getComparativa().getPuntosLocal() > dto.getComparativa().getPuntosVisitante()
+	                        ? dto.getCuotaLocal()
+	                        : dto.getCuotaVisitante());
+	        }
+	
+	        prediccionPartidoRepository.save(prediccion);
+    	}
     }
 
     public List<PronosticoPartidoDTO> obtenerPredicciones(LocalDate desde, LocalDate hasta) {
