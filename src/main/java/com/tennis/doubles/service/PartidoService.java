@@ -482,26 +482,34 @@ public class PartidoService {
 	    if (esPareja1) {
 	        dto.setPorcentajeTotalLocal(stats.getPorcentajeTotal26m());
 	        dto.setPorcentajeFormaRecienteLocal(stats.getPorcentajeTotal4m());
-	        if (superficie.toUpperCase().contains("GRASS")) {
-	        	dto.setPorcentajeSuperficieLocal(stats.getPorcentajeHierba26m());
-	        } else {
-	        	if (superficie.toUpperCase().contains("CLAY")) {
-	        		dto.setPorcentajeSuperficieLocal(stats.getPorcentajeTierra26m());
+	        if (superficie != null) {
+		        if (superficie.toUpperCase().contains("GRASS")) {
+		        	dto.setPorcentajeSuperficieLocal(stats.getPorcentajeHierba26m());
 		        } else {
-		        	dto.setPorcentajeSuperficieLocal(stats.getPorcentajeDura26m());
+		        	if (superficie.toUpperCase().contains("CLAY")) {
+		        		dto.setPorcentajeSuperficieLocal(stats.getPorcentajeTierra26m());
+			        } else {
+			        	dto.setPorcentajeSuperficieLocal(stats.getPorcentajeDura26m());
+			        }
 		        }
+	        } else {
+	        	dto.setPorcentajeSuperficieLocal(0);
 	        }
 	    } else {
 	    	dto.setPorcentajeTotalVisitante(stats.getPorcentajeTotal26m());
 	        dto.setPorcentajeFormaRecienteVisitante(stats.getPorcentajeTotal4m());
-	        if (superficie.toUpperCase().contains("GRASS")) {
-	        	dto.setPorcentajeSuperficieVisitante(stats.getPorcentajeHierba26m());
-	        } else {
-	        	if (superficie.toUpperCase().contains("CLAY")) {
-	        		dto.setPorcentajeSuperficieVisitante(stats.getPorcentajeTierra26m());
+	        if (superficie != null) {
+		        if (superficie.toUpperCase().contains("GRASS")) {
+		        	dto.setPorcentajeSuperficieVisitante(stats.getPorcentajeHierba26m());
 		        } else {
-		        	dto.setPorcentajeSuperficieVisitante(stats.getPorcentajeDura26m());
+		        	if (superficie.toUpperCase().contains("CLAY")) {
+		        		dto.setPorcentajeSuperficieVisitante(stats.getPorcentajeTierra26m());
+			        } else {
+			        	dto.setPorcentajeSuperficieVisitante(stats.getPorcentajeDura26m());
+			        }
 		        }
+	        } else {
+	        	dto.setPorcentajeSuperficieVisitante(0);
 	        }
 	    }
 	}
@@ -536,26 +544,34 @@ public class PartidoService {
 	    if (esPareja1) {
 	    	dto.setPorcentajeTotalLocal(pctTotal26m);
 	        dto.setPorcentajeFormaRecienteLocal(pctUlt4m);
-	        if (superficie.toUpperCase().contains("GRASS")) {
-	        	dto.setPorcentajeSuperficieLocal(pctHierba);
-	        } else {
-	        	if (superficie.toUpperCase().contains("CLAY")) {
-	        		dto.setPorcentajeSuperficieLocal(pctTierra);
+	        if (superficie != null) {
+		        if (superficie.toUpperCase().contains("GRASS")) {
+		        	dto.setPorcentajeSuperficieLocal(pctHierba);
 		        } else {
-		        	dto.setPorcentajeSuperficieLocal(pctDura);
+		        	if (superficie.toUpperCase().contains("CLAY")) {
+		        		dto.setPorcentajeSuperficieLocal(pctTierra);
+			        } else {
+			        	dto.setPorcentajeSuperficieLocal(pctDura);
+			        }
 		        }
+	        } else {
+	        	dto.setPorcentajeSuperficieLocal(0);
 	        }
 	    } else {
 	    	dto.setPorcentajeTotalVisitante(pctTotal26m);
 	        dto.setPorcentajeFormaRecienteVisitante(pctUlt4m);
-	        if (superficie.toUpperCase().contains("GRASS")) {
-	        	dto.setPorcentajeSuperficieVisitante(pctHierba);
-	        } else {
-	        	if (superficie.toUpperCase().contains("CLAY")) {
-	        		dto.setPorcentajeSuperficieVisitante(pctTierra);
+	        if (superficie != null) {
+		        if (superficie.toUpperCase().contains("GRASS")) {
+		        	dto.setPorcentajeSuperficieVisitante(pctHierba);
 		        } else {
-		        	dto.setPorcentajeSuperficieVisitante(pctDura);
+		        	if (superficie.toUpperCase().contains("CLAY")) {
+		        		dto.setPorcentajeSuperficieVisitante(pctTierra);
+			        } else {
+			        	dto.setPorcentajeSuperficieVisitante(pctDura);
+			        }
 		        }
+	        } else {
+	        	dto.setPorcentajeSuperficieVisitante(0);
 	        }
 	    }
 	}
