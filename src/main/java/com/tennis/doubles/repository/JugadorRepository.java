@@ -1,5 +1,7 @@
 package com.tennis.doubles.repository;
 
+import com.tennis.doubles.dto.detalle.DetalleJugadorDTO;
+import com.tennis.doubles.dto.detalle.DetalleParejaDTO;
 import com.tennis.doubles.dto.rankings.RankingJugadorDTO;
 import com.tennis.doubles.model.Jugador;
 
@@ -133,4 +135,66 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 	          AND (LOWER(j.categoria) LIKE '%wta%' OR LOWER(j.categoria) LIKE '%women%')
 	        """)
 	    boolean isFemenino(@Param("jugadorId") Long jugadorId);
+	
+	
+	@Query(value = """
+		    SELECT *
+		    FROM (
+		      SELECT 
+		        p.fecha,
+		        CONCAT(pr1.nombre, ' / ', pr2.nombre) AS rivales,
+		        p.marcador,
+		        'Victoria' AS resultado,
+		        t.nombre AS torneo,
+		        t.superficie,
+		        p.id AS partido_id,
+		        CASE WHEN jp1.id = :jugadorId THEN jp1.nombre ELSE jp2.nombre END AS jugador,
+		        CASE WHEN jp1.id = :jugadorId THEN jp2.nombre ELSE jp1.nombre END AS pareja,
+		        p.ronda
+		      FROM partido p
+		      JOIN pareja pg ON p.pareja_ganadora_id = pg.id
+		      JOIN pareja pp ON p.pareja_perdedora_id = pp.id
+		      JOIN jugador jp1 ON pg.jugador1_id = jp1.id
+		      JOIN jugador jp2 ON pg.jugador2_id = jp2.id
+		      JOIN jugador pr1 ON pp.jugador1_id = pr1.id
+		      JOIN jugador pr2 ON pp.jugador2_id = pr2.id
+		      JOIN torneo t ON p.torneo_id = t.id
+		      WHERE (pg.jugador1_id = :jugadorId OR pg.jugador2_id = :jugadorId)
+		        AND (:fechaInicio IS NULL OR :fechaFin IS NULL OR p.fecha BETWEEN :fechaInicio AND :fechaFin)
+		        AND (:superficie IS NULL OR LOWER(t.superficie) LIKE CONCAT('%', LOWER(:superficie), '%'))
+
+		      UNION
+
+		      SELECT 
+		        p.fecha,
+		        CONCAT(pg1.nombre, ' / ', pg2.nombre) AS rivales,
+		        p.marcador,
+		        'Derrota' AS resultado,
+		        t.nombre AS torneo,
+		        t.superficie,
+		        p.id AS partido_id,
+		        CASE WHEN pp1.id = :jugadorId THEN pp1.nombre ELSE pp2.nombre END AS jugador,
+		        CASE WHEN pp1.id = :jugadorId THEN pp2.nombre ELSE pp1.nombre END AS pareja,
+		        p.ronda
+		      FROM partido p
+		      JOIN pareja pg ON p.pareja_ganadora_id = pg.id
+		      JOIN pareja pp ON p.pareja_perdedora_id = pp.id
+		      JOIN jugador pg1 ON pg.jugador1_id = pg1.id
+		      JOIN jugador pg2 ON pg.jugador2_id = pg2.id
+		      JOIN jugador pp1 ON pp.jugador1_id = pp1.id
+		      JOIN jugador pp2 ON pp.jugador2_id = pp2.id
+		      JOIN torneo t ON p.torneo_id = t.id
+		      WHERE (pp.jugador1_id = :jugadorId OR pp.jugador2_id = :jugadorId)
+		        AND (:fechaInicio IS NULL OR :fechaFin IS NULL OR p.fecha BETWEEN :fechaInicio AND :fechaFin)
+		        AND (:superficie IS NULL OR LOWER(t.superficie) LIKE CONCAT('%', LOWER(:superficie), '%'))
+		    ) AS sub
+		    ORDER BY sub.fecha DESC
+		    """, nativeQuery = true)
+	List<DetalleJugadorDTO> obtenerDetalleJugador(
+		    @Param("jugadorId") Long jugadorId,
+		    @Param("fechaInicio") LocalDate fechaInicio,
+		    @Param("fechaFin") LocalDate fechaFin,
+		    @Param("superficie") String superficie
+		);
+
 }

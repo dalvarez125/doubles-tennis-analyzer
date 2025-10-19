@@ -30,7 +30,7 @@ public class RankingController {
             @RequestParam(name = "superficie", required = false) String superficie,
             @RequestParam(name = "desde", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(name = "hasta", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            @RequestParam(name = "minPartidos", defaultValue = "20") int minPartidos,
+            @RequestParam(name = "minPartidos", defaultValue = "0") int minPartidos,
             Model model
     ) {
     	String superficieBusqueda = null;
@@ -66,7 +66,7 @@ public class RankingController {
             @RequestParam(name = "superficie", required = false) String superficie,
             @RequestParam(name = "desde", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(name = "hasta", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            @RequestParam(name = "minPartidos", defaultValue = "20") int minPartidos,
+            @RequestParam(name = "minPartidos", defaultValue = "0") int minPartidos,
             @RequestParam(name = "favorito", required = false) Boolean favorito,
             Model model
     ) {

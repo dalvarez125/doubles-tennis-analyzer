@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.tennis.doubles.dto.detalle.DetalleJugadorDTO;
 import com.tennis.doubles.dto.detalle.DetalleParejaDTO;
 import com.tennis.doubles.service.detalle.DetalleService;
 
@@ -62,5 +63,43 @@ public class DetalleController {
         model.addAttribute("titulo", "Últimos partidos - " + partidos.get(0).getPareja());
 
         return "detalle-pareja";
+    }
+    
+    @GetMapping("/jugador/{id}")
+    public String detalleJugador(
+    		@PathVariable("id") Long jugadorId,
+            @RequestParam(name = "superficie", required = false) String superficie,
+            @RequestParam(name = "desde", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam(name = "hasta", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(name = "categoria") String categoria,  // solo para volver al ranking
+            @RequestParam(name = "minPartidos") int minPartidos,
+            Model model
+    ) {
+    	String superficieBusqueda = null;
+    	if (superficie != null && !superficie.isEmpty()) {
+    		switch (superficie) {
+    		case "Tierra":
+    			superficieBusqueda = "Clay";
+    			break;
+    		case "Dura":
+    			superficieBusqueda = "Hard";
+    			break;
+			default:
+				superficieBusqueda = "Grass";
+    		}
+    	}
+        List<DetalleJugadorDTO> partidos = detalleService.obtenerDetalleJugador(jugadorId, fechaInicio, fechaFin, superficieBusqueda);
+        
+        model.addAttribute("partidos", partidos);
+        StringBuilder url = new StringBuilder("/ranking/jugadores?categoria=" + categoria);
+        if (superficie != null) url.append("&superficie=").append(superficie);
+        if (fechaInicio != null) url.append("&desde=").append(fechaInicio);
+        if (fechaFin != null) url.append("&hasta=").append(fechaFin);
+        url.append("&minPartidos=").append(minPartidos);
+        model.addAttribute("urlRetorno", url.toString());
+        model.addAttribute("jugadorId", jugadorId);
+        model.addAttribute("titulo", "Últimos partidos - " + partidos.get(0).getJugador());
+
+        return "detalle-jugador";
     }
 }

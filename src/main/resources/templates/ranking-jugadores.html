@@ -42,7 +42,18 @@
     </thead>
     <tbody>
         <tr th:each="j : ${ranking}">
-            <td th:text="${j.nombre}"></td>
+        	<td th:with="
+			        baseUrl='/detalle/jugador/' + ${j.id},
+			        catParam=${categoria} != null ? '&categoria=' + ${categoria} : '',
+			        supParam=${superficie} != null ? '&superficie=' + ${superficie} : '',
+			        desdeParam=${desde} != null ? '&desde=' + ${desde} : '',
+			        hastaParam=${hasta} != null ? '&hasta=' + ${hasta} : '',
+			        minParam=${minPartidos} != null ? '&minPartidos=' + ${minPartidos} : '',
+			        fullUrl=${baseUrl} + '?' + ${#strings.substring(catParam + supParam + desdeParam + hastaParam + minParam, 1)}">
+			    
+			    <a th:href="@{${fullUrl}}"
+			       th:text="${j.nombre}"></a>
+			</td>
             <td th:text="${j.victorias}"></td>
             <td th:text="${j.derrotas}"></td>
             <td th:text="${j.totalPartidos}"></td>
