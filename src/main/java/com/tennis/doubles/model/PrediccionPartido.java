@@ -19,8 +19,6 @@ public class PrediccionPartido {
     private int puntosLocal;
 
     private int puntosVisitante;
-
-    private Boolean acertada;
     
     private Double cuota;
 }

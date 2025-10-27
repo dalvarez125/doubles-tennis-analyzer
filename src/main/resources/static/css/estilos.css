@@ -453,3 +453,16 @@ tr:hover {
     font-size: 0.9em;
     color: #555;
 }
+
+.grafico-container {
+    width: 100%;       /* ocupa todo el ancho disponible */
+    max-width: 1200px;  /* ancho máximo */
+    height: 300px;     /* altura fija, no demasiado alta */
+    margin: 20px auto; /* centrado con margen */
+    overflow-x: auto;  /* scroll horizontal si hay muchas etiquetas */
+}
+
+.grafico-container canvas {
+    width: 100% !important;  /* se adapta al contenedor */
+    height: 100% !important; /* se adapta al contenedor */
+}

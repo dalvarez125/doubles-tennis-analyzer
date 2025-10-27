@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Informe Mensual Pron&oacute;sticos')"></head>
+<body>
+<div th:replace="fragments/navbar :: navbar('Informe Mensual Pron&oacute;sticos')"></div>
+
+<form method="get" th:action="@{/informe/mensual}" class="form-inline">
+    <label for="mes">Selecciona mes:</label>
+
+    <select name="mes" id="mes" required>
+        <option value="" disabled selected>Mes</option>
+        <!-- mostramos todos los meses (mesNumber) pero con texto legible -->
+        <option th:each="m : ${mesesDisponibles}"
+                th:value="${m.mes}"
+                th:text="${m.nombre}"
+                th:selected="${m.mes == mes}">
+        </option>
+    </select>
+
+    <select name="anio" id="anio" required>
+        <option value="" disabled selected>A&ntilde;o</option>
+        <option th:each="a : ${aniosDisponibles}"
+                th:value="${a}"
+                th:text="${a}"
+                th:selected="${a == anio}">
+        </option>
+    </select>
+    <button type="submit">Ver Informe</button>
+</form>
+
+<div th:if="${resumen != null}">
+	<hr>
+    <h3 th:if="${tituloMes != null}" th:text="'Resumen general de ' + ${tituloMes}"></h3>
+    <table border="1" cellpadding="6">
+        <tr>
+            <th>Total Pron&oacute;sticos</th>
+            <th>Aciertos</th>
+            <th>Fallos</th>
+            <th>% Acierto</th>
+        </tr>
+        <tr>
+            <td th:text="${resumen.totalPronosticos}"></td>
+            <td th:text="${resumen.aciertos}"></td>
+            <td th:text="${resumen.fallos}"></td>
+            <td th:text="${#numbers.formatDecimal(resumen.porcentajeAcierto, 1, 2)} + '%'"></td>
+        </tr>
+    </table>
+</div>
+
+<div th:if="${analisisCuotas != null}">
+    <hr>
+    <h3>An&aacute;lisis por rango de cuota</h3>
+    <table border="1" cellpadding="6">
+        <tr>
+            <th>Rango de cuota</th>
+            <th>Total Pron&oacute;sticos</th>
+            <th>Aciertos</th>
+            <th>Fallos</th>
+            <th>% Acierto</th>
+        </tr>
+        <tr th:each="r : ${analisisCuotas}">
+            <td th:text="${r.rango}"></td>
+            <td th:text="${r.aciertos + r.fallos}"></td>
+            <td th:text="${r.aciertos}"></td>
+            <td th:text="${r.fallos}"></td>
+            <td th:text="${#numbers.formatDecimal(r.porcentajeAcierto,1,2)} + '%'"></td>
+        </tr>
+    </table>
+</div>
+
+<div th:if="${resumenRondas != null}">
+    <hr>
+    <h3>Resumen por Ronda</h3>
+    <table border="1" cellpadding="6">
+        <tr>
+            <th>Ronda</th>
+            <th>Total Pron&oacute;sticos</th>
+            <th>Aciertos</th>
+            <th>Fallos</th>
+            <th>% Acierto</th>
+        </tr>
+        <tr th:each="entry : ${resumenRondas}">
+            <td th:text="${entry.key}"></td>
+            <td th:text="${entry.value.total}"></td>
+            <td th:text="${entry.value.aciertos}"></td>
+            <td th:text="${entry.value.fallos}"></td>
+            <td th:text="${#numbers.formatDecimal(entry.value.aciertos * 100.0 / entry.value.total, 1, 2)} + '%'"></td>
+        </tr>
+    </table>
+</div>
+
+<div th:replace="fragments/footer :: pie"></div>
+
+</body>
+</html>

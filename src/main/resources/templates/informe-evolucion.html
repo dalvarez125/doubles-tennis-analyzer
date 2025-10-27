@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: cabecera('Informe Evoluci&oacute;n Pron&oacute;sticos')"></head>
+<body>
+<div th:replace="fragments/navbar :: navbar('Informe Evoluci&oacute;n Pron&oacute;sticos')"></div>
+
+<h2>% de aciertos por mes</h2>
+<div class="grafico-container">
+    <canvas id="graficoAciertos"></canvas>
+</div>
+
+<h2>% de aciertos por rango de cuota</h2>
+<div class="grafico-container">
+    <canvas id="graficoCuotas"></canvas>
+</div>
+
+<h2>% de aciertos por ronda</h2>
+<div class="grafico-container">
+    <canvas id="graficoRondas"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+/* Bloque 1 */
+const datos = /*[[${evolucionAciertoTotal}]]*/ [];
+//Ordenamos los meses (por si vienen desordenados)
+datos.sort((a, b) => a.mes.localeCompare(b.mes));
+
+const etiquetas = datos.map(d => d.mes);
+const total = datos.map(d => d.total);
+const masculino = datos.map(d => d.masculino);
+const femenino = datos.map(d => d.femenino);
+const itf = datos.map(d => d.itf);
+const atpWta = datos.map(d => d.atp_wta);
+
+new Chart(document.getElementById('graficoAciertos'), {
+	type: 'line',
+    data: {
+        labels: etiquetas,
+        datasets: [
+            {
+                label: '% Total',
+                data: total,
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                tension: 0.3,
+                fill: false,
+                pointRadius: 4
+            },
+            {
+                label: '% Masculino',
+                data: masculino,
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                tension: 0.3,
+                fill: false,
+                pointRadius: 4
+            },
+            {
+                label: '% Femenino',
+                data: femenino,
+                borderColor: '#e83e8c',
+                backgroundColor: 'rgba(232, 62, 140, 0.2)',
+                tension: 0.3,
+                fill: false,
+                pointRadius: 4
+            },
+            {
+                label: '% ITF',
+                data: itf,
+                borderColor: '#fd7e14',
+                backgroundColor: 'rgba(253, 126, 20, 0.2)',
+                tension: 0.3,
+                fill: false,
+                pointRadius: 4
+            },
+            {
+                label: '% ATP/WTA',
+                data: atpWta,
+                borderColor: '#6f42c1',
+                backgroundColor: 'rgba(111, 66, 193, 0.2)',
+                tension: 0.3,
+                fill: false,
+                pointRadius: 4
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        }
+    }
+});
+
+/* Bloque 2 */
+const datosCuotas = /*[[${evolucionAciertosPorCuota}]]*/ {};
+const labelsCuotas = datos.map(d => d.mes); // mismos meses
+const datasetsCuotas = [];
+for (const rango in datosCuotas) {
+    datasetsCuotas.push({
+        label: rango,
+        data: datosCuotas[rango].map(d => d.porcentaje),
+        fill: false
+    });
+}
+new Chart(document.getElementById('graficoCuotas'), {
+    type: 'line',
+    data: {
+        labels: labelsCuotas,
+        datasets: datasetsCuotas
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top' }
+        }
+    }
+});
+
+/* Bloque 3 */
+const datosRondas = /*[[${evolucionAciertosPorRonda}]]*/ {};
+const datasetsRondas = [];
+for (const ronda in datosRondas) {
+    datasetsRondas.push({
+        label: ronda,
+        data: datosRondas[ronda].map(d => d.porcentaje),
+        fill: false
+    });
+}
+new Chart(document.getElementById('graficoRondas'), {
+    type: 'line',
+    data: {
+        labels: labelsCuotas,
+        datasets: datasetsRondas
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top' }
+        }
+    }
+});
+</script>
+
+<div th:replace="fragments/footer :: pie"></div>
+</body>
+</html>
