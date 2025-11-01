@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.tennis.doubles.dto.rankings.RankingJugadorDTO;
 import com.tennis.doubles.dto.rankings.RankingParejaDTO;
 import com.tennis.doubles.service.rankings.RankingService;
+import com.tennis.doubles.utils.Constantes;
 
 @Controller
 @RequestMapping("/ranking")
@@ -26,7 +27,7 @@ public class RankingController {
 
     @GetMapping("/jugadores")
     public String rankingJugadores(
-            @RequestParam(name = "categoria", defaultValue = "ATP") String categoria,
+            @RequestParam(name = "categoria", defaultValue = Constantes.ATP) String categoria,
             @RequestParam(name = "superficie", required = false) String superficie,
             @RequestParam(name = "desde", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(name = "hasta", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
@@ -62,7 +63,7 @@ public class RankingController {
     
     @GetMapping("/parejas")
     public String rankingParejas(
-            @RequestParam(name = "categoria", defaultValue = "ATP") String categoria,
+            @RequestParam(name = "categoria", defaultValue = Constantes.ATP) String categoria,
             @RequestParam(name = "superficie", required = false) String superficie,
             @RequestParam(name = "desde", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(name = "hasta", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,

@@ -6,6 +6,8 @@ import com.tennis.doubles.dto.carga.partidos.EventoDTO;
 import com.tennis.doubles.dto.carga.partidos.SubEquipoDTO;
 import com.tennis.doubles.model.*;
 import com.tennis.doubles.repository.*;
+import com.tennis.doubles.utils.Constantes;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,8 +39,8 @@ public class CargadorPartidosService {
 
 	private boolean esAtpWtaItf(EventoDTO evento) {
     	
-    	return evento.getTournament().getCategory().getName().equals("ATP") || evento.getTournament().getCategory().getName().equals("WTA") || 
-    			evento.getTournament().getCategory().getName().equals("ITF Men") || evento.getTournament().getCategory().getName().equals("ITF Women");
+    	return evento.getTournament().getCategory().getName().equals(Constantes.ATP) || evento.getTournament().getCategory().getName().equals(Constantes.WTA) || 
+    			evento.getTournament().getCategory().getName().equals(Constantes.ITF_MEN) || evento.getTournament().getCategory().getName().equals(Constantes.ITF_WOMEN);
 	}
 
 	private Jugador guardarJugador(SubEquipoDTO dto, String categoria) {
@@ -95,19 +97,19 @@ public class CargadorPartidosService {
 	            Torneo torneo = torneoRepository.findByNombreAndAnio(nombreTorneo, anio)
 	                    .orElseGet(() -> {
 	                    	String categoria = evento.getTournament().getCategory().getName();
-	                    	if (!categoria.toUpperCase().contains("ITF")) {
-	                    		categoria = "ATP/WTA";
+	                    	if (!categoria.toUpperCase().contains(Constantes.ITF)) {
+	                    		categoria = Constantes.ATP_WTA;
 	                    	}
 	                        Torneo nuevoTorneo = new Torneo(idTorneo, nombreTorneo, superficie, categoria, anio);
 	                        return torneoRepository.save(nuevoTorneo);
 	                    });
 	            
 	            String categoriaJugador = evento.getTournament().getCategory().getName();
-	            if (categoriaJugador.equals("ITF Men")) {
-	            	categoriaJugador = "ATP";
+	            if (categoriaJugador.equals(Constantes.ITF_MEN)) {
+	            	categoriaJugador = Constantes.ATP;
 	            } else {
-	            	if (categoriaJugador.equals("ITF Women")) {
-		            	categoriaJugador = "WTA";
+	            	if (categoriaJugador.equals(Constantes.ITF_WOMEN)) {
+		            	categoriaJugador = Constantes.WTA;
 		            }
 	            }
 	

@@ -41,6 +41,7 @@ import com.tennis.doubles.repository.ParejaRepository;
 import com.tennis.doubles.repository.PartidoRepository;
 import com.tennis.doubles.repository.TorneoRepository;
 import com.tennis.doubles.service.carga.partidos.AllSportsApiService;
+import com.tennis.doubles.utils.Constantes;
 
 
 @Service
@@ -142,8 +143,8 @@ public class PartidoService {
 			            torneoRepository.findByNombreAndAnio(nombreTorneo, anio)
 			                    .orElseGet(() -> {
 			                    	String categoria = evento.getTournament().getCategory().getName();
-			                    	if (!categoria.toUpperCase().contains("ITF")) {
-			                    		categoria = "ATP/WTA";
+			                    	if (!categoria.toUpperCase().contains(Constantes.ITF)) {
+			                    		categoria = Constantes.ATP_WTA;
 			                    	}
 			                        Torneo nuevoTorneo = new Torneo(idTorneo, nombreTorneo, superficie, categoria, anio);
 			                        return torneoRepository.save(nuevoTorneo);
@@ -151,11 +152,11 @@ public class PartidoService {
 			
 			            // Procesar jugadores
 			            String categoriaJugador = evento.getTournament().getCategory().getName();
-			            if (categoriaJugador.equals("ITF Men")) {
-			            	categoriaJugador = "ATP";
+			            if (categoriaJugador.equals(Constantes.ITF_MEN)) {
+			            	categoriaJugador = Constantes.ATP;
 			            } else {
-			            	if (categoriaJugador.equals("ITF Women")) {
-				            	categoriaJugador = "WTA";
+			            	if (categoriaJugador.equals(Constantes.ITF_WOMEN)) {
+				            	categoriaJugador = Constantes.WTA;
 				            }
 			            }
 			            Jugador jugador1 = guardarJugador(evento.getHomeTeam().getSubTeams().get(0), categoriaJugador);
@@ -230,8 +231,8 @@ public class PartidoService {
 
 	private boolean esAtpWtaITF(EventoDTO evento) {
     	
-    	return evento.getTournament().getCategory().getName().equals("ATP") || evento.getTournament().getCategory().getName().equals("WTA") ||
-    			evento.getTournament().getCategory().getName().equals("ITF Men") || evento.getTournament().getCategory().getName().equals("ITF Women");
+    	return evento.getTournament().getCategory().getName().equals(Constantes.ATP) || evento.getTournament().getCategory().getName().equals(Constantes.WTA) ||
+    			evento.getTournament().getCategory().getName().equals(Constantes.ITF_MEN) || evento.getTournament().getCategory().getName().equals(Constantes.ITF_WOMEN);
 	}
 
 	private Jugador guardarJugador(SubEquipoDTO dto, String categoria) {
@@ -293,13 +294,13 @@ public class PartidoService {
 
         int partidosLocal = partidoRepository.contarPartidosPorParejaYCategoria(
                 parejaLocalId,
-                partido.getCategoria().contains("ITF") ? partido.getCategoria() : "ATP/WTA",
+                partido.getCategoria().contains(Constantes.ITF) ? partido.getCategoria() : Constantes.ATP_WTA,
                 partido.getFecha().minusMonths(26)
         );
 
         int partidosVisitante = partidoRepository.contarPartidosPorParejaYCategoria(
                 parejaVisitanteId,
-                partido.getCategoria().contains("ITF") ? partido.getCategoria() : "ATP/WTA",
+                partido.getCategoria().contains(Constantes.ITF) ? partido.getCategoria() : Constantes.ATP_WTA,
                 partido.getFecha().minusMonths(26)
         );
 
@@ -318,7 +319,7 @@ public class PartidoService {
         	partidosVisitante >= 10 ? ((int) pesosComparativaConfig.getPeso(partido.getCategoria(), "parejaHabitual", null) / 2) : 0);
 
         //Se obtienen las estadisticas de cada jugador
-        String categoria = partido.getCategoria().contains("ITF") ? partido.getCategoria() : "ATP/WTA";
+        String categoria = partido.getCategoria().contains(Constantes.ITF) ? partido.getCategoria() : Constantes.ATP_WTA;
         var stats1 = jugadorEstadisticasRepository.buscarJugador(partido.getJugador1Id(), categoria).orElse(null);
 	    var stats2 = jugadorEstadisticasRepository.buscarJugador(partido.getJugador2Id(), categoria).orElse(null);
 	    var stats3 = jugadorEstadisticasRepository.buscarJugador(partido.getJugador3Id(), categoria).orElse(null);
@@ -341,7 +342,7 @@ public class PartidoService {
 	    	total4 = stats4.getPartidosTotal26m();
 	    }
 	    
-        if (!partido.getCategoria().contains("ITF")) {
+        if (!partido.getCategoria().contains(Constantes.ITF)) {
         	List<Long> ids = Arrays.asList(
             	    partido.getJugador1Id(),
             	    partido.getJugador2Id(),
@@ -438,7 +439,7 @@ public class PartidoService {
 	        boolean habitualLocal,
 	        boolean habitualVisitante,
 	        ProximosPartidosDTO partido, EstadisticasJugador stats1, EstadisticasJugador stats2, EstadisticasJugador stats3, EstadisticasJugador stats4) {
-		String categoria = partido.getCategoria().contains("ITF") ? partido.getCategoria() : "ATP/WTA";
+		String categoria = partido.getCategoria().contains(Constantes.ITF) ? partido.getCategoria() : Constantes.ATP_WTA;
 
 	    // ------------------ LOCAL ------------------
 	    if (habitualLocal) {
@@ -631,7 +632,7 @@ public class PartidoService {
 	    	);
 	}
 	
-	public void asignarCuotasAlPartido(ProximosPartidosDTO partido, Map<String, CuotasDTO> mapaOdds) {
+	private void asignarCuotasAlPartido(ProximosPartidosDTO partido, Map<String, CuotasDTO> mapaOdds) {
 	    if (partido == null || mapaOdds == null) {
 	        return;
 	    }
@@ -681,7 +682,7 @@ public class PartidoService {
 	    int minPuntos = Math.min(puntosLocal, puntosVisitante);
 	    Double cuota = puntosLocal > puntosVisitante ? partido.getCuotaLocal() : partido.getCuotaVisitante();
 
-	    if (partido.getCategoria().contains("ITF")) {
+	    if (partido.getCategoria().contains(Constantes.ITF)) {
 	    	if (diferencia >= 55) {
 	    		prediccionPartidoService.guardarPrediccion(partido);
 	    		return obtenerEstilo(cuota);
@@ -697,10 +698,7 @@ public class PartidoService {
 		    } else if (diferencia >= 45 && minPuntos < 10) {
 		    	prediccionPartidoService.guardarPrediccion(partido);
 		    	return obtenerEstilo(cuota);
-		    } else if (diferencia >= 40 && minPuntos == 0) {
-		    	prediccionPartidoService.guardarPrediccion(partido);
-		    	return obtenerEstilo(cuota);
-		    }else {
+		    } else {
 		        return "";
 		    }
 	    }

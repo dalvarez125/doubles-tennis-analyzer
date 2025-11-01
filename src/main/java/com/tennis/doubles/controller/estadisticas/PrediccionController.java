@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.tennis.doubles.dto.estadisticas.EstadisticasPronosticosDTO;
 import com.tennis.doubles.dto.estadisticas.PronosticoPartidoDTO;
 import com.tennis.doubles.service.PrediccionPartidoService;
+import com.tennis.doubles.utils.Constantes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,8 +39,8 @@ public class PrediccionController {
         EstadisticasPronosticosDTO cuotaAlta = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.getCuota() != null && p.getCuota() >= 1.20);
         EstadisticasPronosticosDTO masculino = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> !p.isFemenino());
         EstadisticasPronosticosDTO femenino = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.isFemenino());
-        EstadisticasPronosticosDTO atpWta = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> !p.getCategoria().contains("ITF"));
-        EstadisticasPronosticosDTO itf = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.getCategoria().contains("ITF"));
+        EstadisticasPronosticosDTO atpWta = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> !p.getCategoria().contains(Constantes.ITF));
+        EstadisticasPronosticosDTO itf = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.getCategoria().contains(Constantes.ITF));
 
         model.addAttribute("fechaDesde", fechaDesde);
         model.addAttribute("fechaHasta", fechaHasta);

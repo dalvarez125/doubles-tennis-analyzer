@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.tennis.doubles.dto.rankings.RankingJugadorDTO;
 import com.tennis.doubles.repository.JugadorRepository;
+import com.tennis.doubles.utils.Constantes;
 
 @Service
 public class JugadorService {
@@ -19,7 +20,7 @@ public class JugadorService {
 
 	public List<RankingJugadorDTO> obtenerRankingJugadores(String categoria, String superficie, LocalDate fechaInicio,
 			LocalDate fechaFin, int minPartidos) {
-		if (categoria.contains("ITF") ) {
+		if (categoria.contains(Constantes.ITF) ) {
 			return jugadorRepository.obtenerRankingJugadoresITF(categoria, superficie, fechaInicio, fechaFin, minPartidos);
 		}
 		return jugadorRepository.obtenerRankingJugadores(categoria, superficie, fechaInicio, fechaFin, minPartidos);
