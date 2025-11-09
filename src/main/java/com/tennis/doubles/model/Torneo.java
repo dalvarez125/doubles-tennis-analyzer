@@ -10,7 +10,7 @@ import lombok.*;
 public class Torneo {
 
     @Id
-    private String id;
+    private Long id;
 
     private String nombre;
 

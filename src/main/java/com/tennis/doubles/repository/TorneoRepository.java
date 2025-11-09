@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TorneoRepository extends JpaRepository<Torneo, String> {
+public interface TorneoRepository extends JpaRepository<Torneo, Long> {
 	
-	Optional<Torneo> findByNombreAndAnio(String nombre, int anio);
+	Optional<Torneo> findById(Long id);
 }

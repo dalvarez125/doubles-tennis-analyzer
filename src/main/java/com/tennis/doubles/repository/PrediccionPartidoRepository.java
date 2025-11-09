@@ -222,11 +222,25 @@ public interface PrediccionPartidoRepository extends JpaRepository<PrediccionPar
             JOIN partido p ON pp.id = p.id
             JOIN torneo t ON p.torneo_id = t.id
             WHERE p.fecha >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-              AND (t.categoria NOT LIKE '%ITF%' OR t.categoria IS NULL)
+              AND (t.categoria LIKE 'ATP' OR t.categoria LIKE 'WTA' OR t.categoria IS NULL)
             GROUP BY YEAR(p.fecha), MONTH(p.fecha)
             ORDER BY YEAR(p.fecha), MONTH(p.fecha)
             """, nativeQuery = true)
     List<Object[]> obtenerAciertosATPWTAPorMes();
+    
+    @Query(value = """
+            SELECT DATE_FORMAT(p.fecha, '%m/%Y') AS mes,
+                   SUM(CASE WHEN pp.pareja_ganadora_id = p.pareja_ganadora_id THEN 1 ELSE 0 END) AS aciertos,
+                   COUNT(*) AS total
+            FROM prediccion_partido pp
+            JOIN partido p ON pp.id = p.id
+            JOIN torneo t ON p.torneo_id = t.id
+            WHERE p.fecha >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+              AND (t.categoria LIKE 'Challenger' OR t.categoria LIKE 'WTA 125')
+            GROUP BY YEAR(p.fecha), MONTH(p.fecha)
+            ORDER BY YEAR(p.fecha), MONTH(p.fecha)
+            """, nativeQuery = true)
+    List<Object[]> obtenerAciertosChallengerPorMes();
 
 
 }

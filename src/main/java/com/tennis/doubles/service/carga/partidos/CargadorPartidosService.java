@@ -37,19 +37,20 @@ public class CargadorPartidosService {
 		return evento.getStatus() != null && evento.getStatus().getCode() == 100;
 	}
 
-	private boolean esAtpWtaItf(EventoDTO evento) {
+	private boolean esAtpWtaItfChallenger(EventoDTO evento) {
     	
     	return evento.getTournament().getCategory().getName().equals(Constantes.ATP) || evento.getTournament().getCategory().getName().equals(Constantes.WTA) || 
-    			evento.getTournament().getCategory().getName().equals(Constantes.ITF_MEN) || evento.getTournament().getCategory().getName().equals(Constantes.ITF_WOMEN);
+    			evento.getTournament().getCategory().getName().equals(Constantes.ITF_MEN) || evento.getTournament().getCategory().getName().equals(Constantes.ITF_WOMEN) ||
+    					evento.getTournament().getCategory().getName().equals(Constantes.CHALLENGER) || evento.getTournament().getCategory().getName().equals(Constantes.WTA_125);
 	}
 
 	private Jugador guardarJugador(SubEquipoDTO dto, String categoria) {
-        return jugadorRepository.findByNombre(dto.getName())
+        return jugadorRepository.findById(dto.getId())
                 .orElseGet(() -> jugadorRepository.save(new Jugador(dto.getId(), dto.getName(), null, categoria)));
     }
 
     private Pareja guardarPareja(Jugador j1, Jugador j2, Long idPareja) {
-        Optional<Pareja> existente = parejaRepository.findByJugadoresIgnoreOrder(j1, j2);
+        Optional<Pareja> existente = parejaRepository.findById(idPareja);
         return existente.orElseGet(() -> parejaRepository.save(new Pareja(idPareja, j1, j2, false)));
     }
     
@@ -83,32 +84,28 @@ public class CargadorPartidosService {
 		for (EventoDTO evento : listaEventos) {
         	if (!esDobles(evento.getHomeTeam()) || !esDobles(evento.getAwayTeam()) 
         			|| esDoblesMixtos(evento.getHomeTeam()) || esDoblesMixtos(evento.getAwayTeam()) 
-        			|| !esAtpWtaItf(evento) || !finalizado(evento) || evento.getRoundInfo() == null) continue;
+        			|| !esAtpWtaItfChallenger(evento) || !finalizado(evento) || evento.getRoundInfo() == null) continue;
 
         	 try {
             
 	        	// Procesar torneo
-	        	String slugTorneo = evento.getTournament().getSlug(); // Ej: "roland-garros"
+	        	Long idTorneo = evento.getTournament().getId();
 	        	int anio = Integer.parseInt(evento.getSeason().getYear().trim());
-	        	String idTorneo = slugTorneo + "-" + anio;
 	
 	        	String nombreTorneo = evento.getTournament().getName();
 	        	String superficie = evento.getTournament().getUniqueTournament().getGroundType();
-	            Torneo torneo = torneoRepository.findByNombreAndAnio(nombreTorneo, anio)
+	            Torneo torneo = torneoRepository.findById(idTorneo)
 	                    .orElseGet(() -> {
 	                    	String categoria = evento.getTournament().getCategory().getName();
-	                    	if (!categoria.toUpperCase().contains(Constantes.ITF)) {
-	                    		categoria = Constantes.ATP_WTA;
-	                    	}
 	                        Torneo nuevoTorneo = new Torneo(idTorneo, nombreTorneo, superficie, categoria, anio);
 	                        return torneoRepository.save(nuevoTorneo);
 	                    });
 	            
 	            String categoriaJugador = evento.getTournament().getCategory().getName();
-	            if (categoriaJugador.equals(Constantes.ITF_MEN)) {
+	            if (categoriaJugador.equals(Constantes.ITF_MEN) || categoriaJugador.equals(Constantes.CHALLENGER)) {
 	            	categoriaJugador = Constantes.ATP;
 	            } else {
-	            	if (categoriaJugador.equals(Constantes.ITF_WOMEN)) {
+	            	if (categoriaJugador.equals(Constantes.ITF_WOMEN) || categoriaJugador.equals(Constantes.WTA_125)) {
 		            	categoriaJugador = Constantes.WTA;
 		            }
 	            }
@@ -153,6 +150,8 @@ public class CargadorPartidosService {
 	                } else if (evento.getWinnerCode() == 2) {
 	                    parejaGanadora = parejaVisitante;
 	                    parejaPerdedora = parejaLocal;
+	                } else {
+	                	Files.writeString(Path.of("error_log.log"), "Error en codigo de ganador. Partido: " + evento.getId()+ " : " + fecha + " : " + evento.getWinnerCode() +  "\n", StandardOpenOption.APPEND);
 	                }
 	            }
 	            

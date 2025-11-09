@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.tennis.doubles.dto.rankings.RankingParejaDTO;
 import com.tennis.doubles.model.Pareja;
 import com.tennis.doubles.repository.ParejaRepository;
-import com.tennis.doubles.utils.Constantes;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -30,9 +29,6 @@ public class ParejaService {
 
 	public List<RankingParejaDTO> obtenerRankingParejas(String categoria, String superficie, LocalDate fechaInicio,
 			LocalDate fechaFin, int minPartidos, Boolean favorito) {
-		if (categoria.contains(Constantes.ITF)) {
-			return parejaRepository.obtenerRankingParejasITF(categoria, superficie, fechaInicio, fechaFin, minPartidos, favorito);
-		}
 		return parejaRepository.obtenerRankingParejas(categoria, superficie, fechaInicio, fechaFin, minPartidos, favorito);
 	}
 

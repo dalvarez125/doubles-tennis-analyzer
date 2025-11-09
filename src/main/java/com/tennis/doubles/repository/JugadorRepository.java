@@ -1,7 +1,6 @@
 package com.tennis.doubles.repository;
 
 import com.tennis.doubles.dto.detalle.DetalleJugadorDTO;
-import com.tennis.doubles.dto.detalle.DetalleParejaDTO;
 import com.tennis.doubles.dto.rankings.RankingJugadorDTO;
 import com.tennis.doubles.model.Jugador;
 
@@ -56,56 +55,6 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 		    JOIN partido p ON p.pareja_ganadora_id = pa.id OR p.pareja_perdedora_id = pa.id
 		    JOIN torneo t ON p.torneo_id = t.id
 
-		    WHERE t.categoria = 'ATP/WTA'
-		      AND j.categoria = :categoria
-		      AND (:superficie IS NULL OR LOWER(t.superficie) LIKE CONCAT('%', LOWER(:superficie), '%'))
-		      AND (:fechaInicio IS NULL OR :fechaFin IS NULL OR p.fecha BETWEEN :fechaInicio AND :fechaFin)
-
-		    GROUP BY j.id, j.nombre
-
-		    HAVING (SUM(CASE 
-		        WHEN p.pareja_ganadora_id = pa.id THEN 1 
-		        WHEN p.pareja_perdedora_id = pa.id THEN 1 
-		        ELSE 0 
-		    END)) >= :minPartidos
-
-		    ORDER BY porcentaje_victorias DESC, total_partidos DESC
-		""", nativeQuery = true)
-		List<RankingJugadorDTO> obtenerRankingJugadores(
-		    @Param("categoria") String categoria,
-		    @Param("superficie") String superficie,
-		    @Param("fechaInicio") LocalDate fechaInicio,
-		    @Param("fechaFin") LocalDate fechaFin,
-		    @Param("minPartidos") int minPartidos
-		);
-	
-	@Query(value = """
-		    SELECT 
-		        j.id AS jugador_id,
-		        j.nombre AS nombre_jugador,
-
-		        SUM(CASE WHEN p.pareja_ganadora_id = pa.id THEN 1 ELSE 0 END) AS victorias,
-		        SUM(CASE WHEN p.pareja_perdedora_id = pa.id THEN 1 ELSE 0 END) AS derrotas,
-
-		        COUNT(*) AS total_partidos,
-
-		        ROUND(
-		            100 * SUM(CASE WHEN p.pareja_ganadora_id = pa.id THEN 1 ELSE 0 END) /
-		            NULLIF(
-		                SUM(CASE 
-		                    WHEN p.pareja_ganadora_id = pa.id THEN 1
-		                    WHEN p.pareja_perdedora_id = pa.id THEN 1
-		                    ELSE 0
-		                END), 0
-		            ),
-		            2
-		        ) AS porcentaje_victorias
-
-		    FROM jugador j
-		    JOIN pareja pa ON j.id = pa.jugador1_id OR j.id = pa.jugador2_id
-		    JOIN partido p ON p.pareja_ganadora_id = pa.id OR p.pareja_perdedora_id = pa.id
-		    JOIN torneo t ON p.torneo_id = t.id
-
 		    WHERE t.categoria = :categoria
 		      AND (:superficie IS NULL OR LOWER(t.superficie) LIKE CONCAT('%', LOWER(:superficie), '%'))
 		      AND (:fechaInicio IS NULL OR :fechaFin IS NULL OR p.fecha BETWEEN :fechaInicio AND :fechaFin)
@@ -120,7 +69,7 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 
 		    ORDER BY porcentaje_victorias DESC, total_partidos DESC
 		""", nativeQuery = true)
-		List<RankingJugadorDTO> obtenerRankingJugadoresITF(
+		List<RankingJugadorDTO> obtenerRankingJugadores(
 		    @Param("categoria") String categoria,
 		    @Param("superficie") String superficie,
 		    @Param("fechaInicio") LocalDate fechaInicio,
@@ -146,6 +95,7 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 		        p.marcador,
 		        'Victoria' AS resultado,
 		        t.nombre AS torneo,
+		        t.categoria,
 		        t.superficie,
 		        p.id AS partido_id,
 		        CASE WHEN jp1.id = :jugadorId THEN jp1.nombre ELSE jp2.nombre END AS jugador,
@@ -171,6 +121,7 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 		        p.marcador,
 		        'Derrota' AS resultado,
 		        t.nombre AS torneo,
+		        t.categoria,
 		        t.superficie,
 		        p.id AS partido_id,
 		        CASE WHEN pp1.id = :jugadorId THEN pp1.nombre ELSE pp2.nombre END AS jugador,

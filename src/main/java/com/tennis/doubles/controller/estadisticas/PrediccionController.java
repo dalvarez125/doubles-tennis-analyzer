@@ -39,8 +39,9 @@ public class PrediccionController {
         EstadisticasPronosticosDTO cuotaAlta = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.getCuota() != null && p.getCuota() >= 1.20);
         EstadisticasPronosticosDTO masculino = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> !p.isFemenino());
         EstadisticasPronosticosDTO femenino = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.isFemenino());
-        EstadisticasPronosticosDTO atpWta = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> !p.getCategoria().contains(Constantes.ITF));
+        EstadisticasPronosticosDTO atpWta = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.getCategoria().equals(Constantes.ATP) || p.getCategoria().equals(Constantes.WTA));
         EstadisticasPronosticosDTO itf = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.getCategoria().contains(Constantes.ITF));
+        EstadisticasPronosticosDTO challenger = prediccionService.calcularEstadisticasPorFiltro(listaPredicciones, p -> p.getCategoria().equals(Constantes.CHALLENGER) || p.getCategoria().equals(Constantes.WTA_125));
 
         model.addAttribute("fechaDesde", fechaDesde);
         model.addAttribute("fechaHasta", fechaHasta);
@@ -50,6 +51,7 @@ public class PrediccionController {
         model.addAttribute("estadisticasFemenino", femenino);
         model.addAttribute("estadisticasATP_WTA", atpWta);
         model.addAttribute("estadisticasITF", itf);
+        model.addAttribute("estadisticasChallenger", challenger);
         model.addAttribute("estadisticasCuotaAlta", cuotaAlta);
 
         return "estadisticas-pronosticos";

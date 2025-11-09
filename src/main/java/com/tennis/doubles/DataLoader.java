@@ -73,7 +73,7 @@ public class DataLoader implements CommandLineRunner {
     	
     	if (actualizacionService.necesitaActualizar()) {
     		LocalDate hoy = LocalDate.now();
-            LocalDate ultimaActualizacion = actualizacionService.getActualizacionRepository().findTopByOrderByFechaUltimaActualizacionDesc().getFechaUltimaActualizacion();
+            //LocalDate ultimaActualizacion = actualizacionService.getActualizacionRepository().findTopByOrderByFechaUltimaActualizacionDesc().getFechaUltimaActualizacion();
             boolean errorPartidos = false;
             boolean errorRanking = false;
 //            for (LocalDate fecha = ultimaActualizacion;

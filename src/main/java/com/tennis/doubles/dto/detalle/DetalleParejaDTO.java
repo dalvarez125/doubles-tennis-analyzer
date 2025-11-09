@@ -14,12 +14,13 @@ public class DetalleParejaDTO {
     private String marcador;
     private String resultado;
     private String torneo;
+    private String categoria;
     private String superficie;
     private Long partidoId;
     private String pareja;
     private String ronda;
     
-	public DetalleParejaDTO(Date fecha, String rivales, String marcador, String resultado, String torneo,
+	public DetalleParejaDTO(Date fecha, String rivales, String marcador, String resultado, String torneo, String categoria,
 			String superficie, Long partidoId, String pareja, String ronda) {
 		super();
 		this.fecha = fecha.toLocalDate();
@@ -27,6 +28,7 @@ public class DetalleParejaDTO {
 		this.marcador = marcador;
 		this.resultado = resultado;
 		this.torneo = torneo;
+		this.categoria = categoria;
 		this.superficie = superficie;
 		this.partidoId = partidoId;
 		this.pareja = pareja;

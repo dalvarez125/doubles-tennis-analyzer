@@ -77,7 +77,7 @@
 
     <!-- Bloque ATP/WTA e ITF -->
     <div class="bloque-estadisticas">
-        <h3>ATP/WTA / ITF</h3>
+        <h3>ATP/WTA / Challenger / ITF</h3>
         <div class="flex-horizontal">
             <div class="datos-estadistica">
                 <ul>
@@ -85,6 +85,10 @@
                     <li><strong>Aciertos ATP/WTA:</strong> <span th:text="${estadisticasATP_WTA.totalAciertos}" style="color:green"></span></li>
                     <li><strong>Fallos ATP/WTA:</strong> <span th:text="${estadisticasATP_WTA.totalFallos}" style="color:red"></span></li>
                     <li><strong>% Acierto ATP/WTA:</strong> <span th:text="${#numbers.formatDecimal(estadisticasATP_WTA.porcentajeAcierto, 1, 2)} + '%'"></span></li>
+                    <li><strong>Pronósticos Challenger:</strong> <span th:text="${estadisticasChallenger.totalPronosticos}"></span></li>
+                    <li><strong>Aciertos Challenger:</strong> <span th:text="${estadisticasChallenger.totalAciertos}" style="color:green"></span></li>
+                    <li><strong>Fallos Challenger:</strong> <span th:text="${estadisticasChallenger.totalFallos}" style="color:red"></span></li>
+                    <li><strong>% Acierto Challenger:</strong> <span th:text="${#numbers.formatDecimal(estadisticasChallenger.porcentajeAcierto, 1, 2)} + '%'"></span></li>
                     <li><strong>Pronósticos ITF:</strong> <span th:text="${estadisticasITF.totalPronosticos}"></span></li>
                     <li><strong>Aciertos ITF:</strong> <span th:text="${estadisticasITF.totalAciertos}" style="color:green"></span></li>
                     <li><strong>Fallos ITF:</strong> <span th:text="${estadisticasITF.totalFallos}" style="color:red"></span></li>
@@ -109,6 +113,7 @@
     var porcentajeMasculino = parseFloat([[${#numbers.formatDecimal(estadisticasMasculino.porcentajeAcierto, 1, 2)}]]);
     var porcentajeFemenino = parseFloat([[${#numbers.formatDecimal(estadisticasFemenino.porcentajeAcierto, 1, 2)}]]);
     var porcentajeATP = parseFloat([[${#numbers.formatDecimal(estadisticasATP_WTA.porcentajeAcierto, 1, 2)}]]);
+    var porcentajeChallenger = parseFloat([[${#numbers.formatDecimal(estadisticasChallenger.porcentajeAcierto, 1, 2)}]]);
     var porcentajeITF = parseFloat([[${#numbers.formatDecimal(estadisticasITF.porcentajeAcierto, 1, 2)}]]);
 
     const graficaTotal = new Chart(document.getElementById('graficaTotal'), {
@@ -147,10 +152,10 @@
     const graficaCategoria = new Chart(document.getElementById('graficaCategoria'), {
         type: 'doughnut',
         data: {
-            labels: ['% ATP/WTA', '% ITF'],
+            labels: ['% ATP/WTA', '% Challenger', '% ITF'],
             datasets: [{
-                data: [porcentajeATP, porcentajeITF],
-                backgroundColor: ['#3F51B5', '#FF9800']
+                data: [porcentajeATP, porcentajeChallenger, porcentajeITF],
+                backgroundColor: ['#3F51B5', '#FF9800', '#4CAF50']
             }]
         }
     });

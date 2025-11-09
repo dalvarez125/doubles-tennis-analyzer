@@ -27,4 +27,19 @@ public class EstadisticasPareja {
 
     @Column(name = "pct_dura_26m")
     private Double porcentajeDura26m;
+    
+    @Column(name = "partidos_total_26m")
+    private int partidosTotal26m;
+
+    @Column(name = "partidos_total_4m")
+    private int partidosTotal4m;
+
+    @Column(name = "partidos_tierra_26m")
+    private int partidosTierra26m;
+
+    @Column(name = "partidos_hierba_26m")
+    private int partidosHierba26m;
+
+    @Column(name = "partidos_dura_26m")
+    private int partidosDura26m;
 }

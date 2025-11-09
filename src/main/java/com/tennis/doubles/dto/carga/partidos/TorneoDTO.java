@@ -11,4 +11,5 @@ public class TorneoDTO {
     private String slug;
     private CategoriaDTO category;
     private TorneoUnicoDTO uniqueTournament;
+    private Long id;
 }

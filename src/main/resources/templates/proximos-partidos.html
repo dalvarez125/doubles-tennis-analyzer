@@ -4,15 +4,11 @@
 <body>
 <div th:replace="fragments/navbar :: navbar('Pr&oacute;ximos Partidos')"></div>
 
-<form method="get" th:action="@{/partido/proximos}" style="margin-bottom: 20px;">
-    <label for="categoria">Categor&iacute;a:</label>
-    <select name="categoria" id="categoria">
-        <option value="">Todas</option>
-        <option value="ATP" th:selected="${categoria == 'ATP'}">ATP</option>
-        <option value="WTA" th:selected="${categoria == 'WTA'}">WTA</option>
-        <option value="ITF Men" th:selected="${categoria == 'ITF Men'}">ITF Men</option>
-        <option value="ITF Women" th:selected="${categoria == 'ITF Women'}">ITF Women</option>
-    </select>
+<form id="filtroForm" method="get" th:action="@{/partido/proximos}" style="margin-bottom: 20px;">
+
+    <!-- Campos ocultos donde se guardará la fecha y categoría activa -->
+    <input type="hidden" id="fecha" name="fecha" th:value="${fecha}" />
+    <input type="hidden" id="categoria" name="categoria" th:value="${categoria}" />
 
     <label for="favorito">
         <input type="checkbox" id="favorito" name="favorito" th:checked="${favorito}" />
@@ -29,11 +25,28 @@
         Solo cerrados
     </label>
 
-    <button type="submit">Filtrar</button>
-    
+    <button type="submit">Aplicar filtros</button>
     <button type="submit" name="refrescar" value="true">Refrescar Cache</button>
 </form>
 
+<!-- Pestañas de FECHA -->
+<div class="tab-bar fecha-tabs">
+    <div th:class="'tab-item ' + (${fecha} == 'hoy' ? 'active' : '')" data-fecha="hoy" th:text="${fechaHoy}"></div>
+    <div th:class="'tab-item ' + (${fecha} == 'manana' ? 'active' : '')" data-fecha="manana" th:text="${fechaManana}"></div>
+    <div th:class="'tab-item ' + (${fecha} == 'pasado' ? 'active' : '')" data-fecha="pasado" th:text="${fechaPasado}"></div>
+</div>
+
+<!-- Pestañas de CATEGORÍA -->
+<div class="tab-bar categoria-tabs">
+    <div th:class="'tab-item ' + (${categoria} == 'ATP' ? 'active' : '')" data-categoria="ATP">ATP / WTA</div>
+    <div th:class="'tab-item ' + (${categoria} == 'Challenger' ? 'active' : '')" data-categoria="Challenger">Challenger / WTA125</div>
+    <div th:class="'tab-item ' + (${categoria} == 'ITF' ? 'active' : '')" data-categoria="ITF">ITF</div>
+</div>
+
+
+<!-- ========================= -->
+<!-- Contenedor de PARTIDOS -->
+<!-- ========================= -->
 <div class="partidos-container">
 	<div class="partido-card"
      th:each="partido : ${partidos}"
@@ -46,10 +59,11 @@
 
         <div class="info-central" th:with="
 			        baseUrl='/partido/detalle/' + ${partido.id},
+			        fecParam=${fecha} != null ? '&fecha=' + ${fecha} : '',
 			        catParam=${categoria} != null ? '&categoria=' + ${categoria} : '',
 			        favorito=${favorito} != null ? '&favorito=' + ${favorito} : '',
 			        ordenPronostico=${ordenPronostico} != null ? '&ordenPronostico=' + ${ordenPronostico} : '',
-			        fullUrl=${baseUrl} + '?' + ${#strings.substring(catParam + favorito + ordenPronostico, 1)}">
+			        fullUrl=${baseUrl} + '?' + ${#strings.substring(fecParam + catParam + favorito + ordenPronostico, 1)}">
             <div class="info-item">
                 <strong>Fecha:</strong> <span th:text="${partido.fecha}"></span>
             </div>
@@ -109,6 +123,31 @@
 </div>
 
 <div th:replace="fragments/footer :: pie"></div>
+
+<!-- ========================= -->
+<!-- Script para cambiar pestañas y hacer submit -->
+<!-- ========================= -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('filtroForm');
+    const fechaInput = document.getElementById('fecha');
+    const categoriaInput = document.getElementById('categoria');
+
+    document.querySelectorAll('.fecha-tabs .tab-item').forEach(tab => {
+        tab.addEventListener('click', () => {
+            fechaInput.value = tab.dataset.fecha;
+            form.submit();
+        });
+    });
+
+    document.querySelectorAll('.categoria-tabs .tab-item').forEach(tab => {
+        tab.addEventListener('click', () => {
+            categoriaInput.value = tab.dataset.categoria;
+            form.submit();
+        });
+    });
+});
+</script>
+
 </body>
 </html>
-

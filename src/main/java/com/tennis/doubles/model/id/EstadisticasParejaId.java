@@ -10,6 +10,10 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Embeddable
 public class EstadisticasParejaId implements Serializable {
-    private Long parejaId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long parejaId;
     private String categoria;
 }

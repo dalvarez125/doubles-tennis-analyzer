@@ -106,6 +106,7 @@ public class InformeMensualService {
         List<Object[]> masculinoRows = prediccionPartidoRepository.obtenerAciertosMasculinoPorMes();
         List<Object[]> femeninoRows = prediccionPartidoRepository.obtenerAciertosFemeninoPorMes();
         List<Object[]> itfRows = prediccionPartidoRepository.obtenerAciertosITFPorMes();
+        List<Object[]> challengerRows = prediccionPartidoRepository.obtenerAciertosChallengerPorMes();
         List<Object[]> atpWtaRows = prediccionPartidoRepository.obtenerAciertosATPWTAPorMes();
 
         Map<String, Map<String, Object>> resultado = new LinkedHashMap<>();
@@ -132,6 +133,7 @@ public class InformeMensualService {
         procesarGrupo.accept(masculinoRows, "masculino");
         procesarGrupo.accept(femeninoRows, "femenino");
         procesarGrupo.accept(itfRows, "itf");
+        procesarGrupo.accept(challengerRows, "challenger");
         procesarGrupo.accept(atpWtaRows, "atp_wta");
 
         // --- Rellenar con 0 los valores faltantes (por consistencia del gráfico) ---
@@ -140,6 +142,7 @@ public class InformeMensualService {
             m.putIfAbsent("masculino", 0.0);
             m.putIfAbsent("femenino", 0.0);
             m.putIfAbsent("itf", 0.0);
+            m.putIfAbsent("challenger", 0.0);
             m.putIfAbsent("atp_wta", 0.0);
         }
 

@@ -13,7 +13,12 @@ import java.io.Serializable;
 @Embeddable
 public class EstadisticasJugadorId implements Serializable {
 
-    @Column(name = "jugador_id")
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Column(name = "jugador_id")
     private Long jugadorId;
 
     @Column(name = "categoria")
