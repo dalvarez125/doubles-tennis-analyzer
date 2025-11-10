@@ -132,11 +132,16 @@ public class DataLoader implements CommandLineRunner {
 	    	try {
 	    		List<RankingDTO> rankingWTA = ultimateTennisService.obtenerRanking("wta");
 	    		for (RankingDTO ranking : rankingWTA) {
-	    			jugadorRepository.findByNombre(ranking.getName())
-	                .ifPresent(jugador -> {
-	                    jugador.setRankingDobles(ranking.getRanking());
-	                    jugadorRepository.save(jugador);
-	                });
+	    			try {
+		    			jugadorRepository.findByNombre(ranking.getName())
+		                .ifPresent(jugador -> {
+		                    jugador.setRankingDobles(ranking.getRanking());
+		                    jugadorRepository.save(jugador);
+		                });
+	    			} catch (Exception e) {
+	    				Files.writeString(Path.of("error_log.log"), "Error al obtener jugadora: " + ranking.getName() + " - " + ranking.getRanking() + " - " + e.getMessage() + "\n", StandardOpenOption.APPEND);
+						errorRanking = true;
+	    			}
 				}
 			} catch (IOException | InterruptedException e) {
 				try {
