@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Etapa 2: usar solo el JAR en una imagen ligera
-FROM openjdk:17-jdk-alpine
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 COPY --from=build /app/target/doubles-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java","-jar","/app/app.jar"]
