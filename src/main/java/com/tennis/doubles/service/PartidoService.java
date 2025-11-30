@@ -461,25 +461,12 @@ public class PartidoService {
 	    int minPuntos = Math.min(puntosLocal, puntosVisitante);
 	    Double cuota = puntosLocal > puntosVisitante ? partido.getCuotaLocal() : partido.getCuotaVisitante();
 
-	    if (partido.getCategoria().contains(Constantes.ITF)) {
-	    	if (diferencia >= 55) {
-	    		prediccionPartidoService.guardarPrediccion(partido);
-	    		return obtenerEstilo(cuota);
-		        
-		    }else {
-		        return "";
-		    }
-	    } else {
-		    if (diferencia >= 55) {
-		    	prediccionPartidoService.guardarPrediccion(partido);
-		    	return obtenerEstilo(cuota);
-		        
-		    } else if (diferencia >= 45 && minPuntos < 10) {
-		    	prediccionPartidoService.guardarPrediccion(partido);
-		    	return obtenerEstilo(cuota);
-		    } else {
-		        return "";
-		    }
+	    if (diferencia >= 55) {
+    		prediccionPartidoService.guardarPrediccion(partido);
+    		return obtenerEstilo(cuota);
+	        
+	    }else {
+	        return "";
 	    }
 	}
 	

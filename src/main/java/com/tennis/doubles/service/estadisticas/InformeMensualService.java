@@ -117,6 +117,10 @@ public class InformeMensualService {
                 String mes = (String) r[0];
                 int aciertos = ((Number) r[1]).intValue();
                 int total = ((Number) r[2]).intValue();
+                
+             // Si total = 0 → NO agregar la clave → Chart.js ignora ese punto
+                if (total == 0) continue;
+                
                 double porcentaje = total == 0 ? 0.0 : (aciertos * 100.0 / total);
 
                 Map<String, Object> m = resultado.computeIfAbsent(mes, k -> {
@@ -137,14 +141,14 @@ public class InformeMensualService {
         procesarGrupo.accept(atpWtaRows, "atp_wta");
 
         // --- Rellenar con 0 los valores faltantes (por consistencia del gráfico) ---
-        for (Map<String, Object> m : resultado.values()) {
+        /*for (Map<String, Object> m : resultado.values()) {
             m.putIfAbsent("total", 0.0);
             m.putIfAbsent("masculino", 0.0);
             m.putIfAbsent("femenino", 0.0);
             m.putIfAbsent("itf", 0.0);
             m.putIfAbsent("challenger", 0.0);
             m.putIfAbsent("atp_wta", 0.0);
-        }
+        }*/
 
         return new ArrayList<>(resultado.values());
     }
