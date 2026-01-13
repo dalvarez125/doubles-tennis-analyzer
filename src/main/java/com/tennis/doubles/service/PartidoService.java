@@ -252,7 +252,7 @@ public class PartidoService {
 		
 		partidosEnMemoria.put(fecha, mapaFecha);
 		
-		if (!listaPartidosItf.isEmpty() && !listaPartidosChallenger.isEmpty() && !listaPartidosAtp.isEmpty()) {
+		if (!listaPartidosItf.isEmpty() || !listaPartidosChallenger.isEmpty() || !listaPartidosAtp.isEmpty()) {
 			ultimaActualizacion = LocalDate.now();
 		}
 	}
@@ -466,7 +466,13 @@ public class PartidoService {
     		return obtenerEstilo(cuota);
 	        
 	    }else {
-	        return "";
+	    	if (diferencia >= 50) {
+	    		prediccionPartidoService.guardarPrediccion(partido);
+	    		return obtenerEstilo(cuota);
+		        
+		    }else {
+		        return "";
+		    }
 	    }
 	}
 	
