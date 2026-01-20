@@ -83,6 +83,9 @@ public class PartidoService {
 
 	public List<ProximosPartidosDTO> getProximosPartidos(String categoria, boolean soloFavoritos, boolean ordenPronostico, boolean soloCerrados, boolean refrescar, String fecha) {
         if (!partidosEnMemoria.containsKey(fecha) || datosDesactualizados() || refrescar) {
+        	if (datosDesactualizados()) {
+        		partidosEnMemoria = new HashMap<String, Map<String, List<ProximosPartidosDTO>>>();
+        	}
             cargarProximosPartidosDesdeAPI(fecha);
         }
         
