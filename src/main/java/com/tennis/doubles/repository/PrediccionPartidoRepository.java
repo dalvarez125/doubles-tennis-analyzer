@@ -134,7 +134,7 @@ public interface PrediccionPartidoRepository extends JpaRepository<PrediccionPar
             JOIN partido p ON pp.id = p.id
             WHERE p.fecha >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
             GROUP BY DATE_FORMAT(p.fecha, '%m/%Y')
-            ORDER BY mes
+            ORDER BY p.fecha
             """, nativeQuery = true)
     List<Object[]> obtenerAciertosTotalesPorMes();
 
@@ -153,7 +153,7 @@ public interface PrediccionPartidoRepository extends JpaRepository<PrediccionPar
                OR (:rango = 'sin cuota' AND pp.cuota IS NULL))
     		AND p.fecha >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
             GROUP BY DATE_FORMAT(p.fecha, '%m/%Y')
-            ORDER BY mes
+            ORDER BY p.fecha
             """, nativeQuery = true)
     List<Object[]> obtenerAciertosPorCuotaRango(@Param("rango") String rango);
 
@@ -166,7 +166,7 @@ public interface PrediccionPartidoRepository extends JpaRepository<PrediccionPar
             WHERE p.ronda = :ronda
             AND p.fecha >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
             GROUP BY DATE_FORMAT(p.fecha, '%m/%Y')
-            ORDER BY mes
+            ORDER BY p.fecha
             """, nativeQuery = true)
     List<Object[]> obtenerAciertosPorRonda(@Param("ronda") String ronda);
     
