@@ -462,19 +462,36 @@ public class PartidoService {
 	    int puntosVisitante = partido.getComparativa().getPuntosVisitante();
 	    int diferencia = Math.abs(puntosLocal - puntosVisitante);
 	    int minPuntos = Math.min(puntosLocal, puntosVisitante);
+	    int maxPuntos = Math.max(puntosLocal, puntosVisitante);
 	    Double cuota = puntosLocal > puntosVisitante ? partido.getCuotaLocal() : partido.getCuotaVisitante();
 
-	    if (diferencia >= 55) {
-    		prediccionPartidoService.guardarPrediccion(partido);
-    		return obtenerEstilo(cuota);
-	        
-	    }else {
-	    	if (diferencia >= 50) {
+	    if (partido.getCategoria().contains("ATP") || partido.getCategoria().contains("WTA")) {
+		    if (diferencia >= 45 && minPuntos < 15) {
 	    		prediccionPartidoService.guardarPrediccion(partido);
 	    		return obtenerEstilo(cuota);
 		        
 		    }else {
-		        return "";
+		    	if (minPuntos < 20 && maxPuntos >= 75) {
+		    		prediccionPartidoService.guardarPrediccion(partido);
+		    		return obtenerEstilo(cuota);
+			        
+			    }else {
+			        return "";
+			    }
+		    }
+	    } else {
+	    	if (diferencia >= 45 && minPuntos <= 10) {
+	    		prediccionPartidoService.guardarPrediccion(partido);
+	    		return obtenerEstilo(cuota);
+		        
+		    }else {
+		    	if (minPuntos < 20 && maxPuntos >= 75) {
+		    		prediccionPartidoService.guardarPrediccion(partido);
+		    		return obtenerEstilo(cuota);
+			        
+			    }else {
+			        return "";
+			    }
 		    }
 	    }
 	}
